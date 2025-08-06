@@ -1,0 +1,113 @@
+@model IEnumerable<CarRentingSystem2025.Models.Car>
+@{
+    ViewData["Title"] = "All Cars";
+}
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center mb-3">
+                <i class="fas fa-car text-primary"></i> Available Cars
+            </h2>
+            <p class="text-center text-muted">Choose from our extensive fleet of vehicles</p>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var car in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-car text-primary mb-3" style="font-size: 3rem;"></i>
+                        <h5 class="card-title">@car.Brand @car.Model (@car.Year)</h5>
+                        <p class="card-text text-muted mb-2">@car.BrandEntity?.Name</p>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-gas-pump"></i> @car.FuelType
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-cog"></i> @car.Transmission
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-users"></i> @car.Seats seats
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-palette"></i> @car.Color
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge @(car.IsAvailable ? "bg-success" : "bg-danger")">
+                                @(car.IsAvailable ? "Available" : "Unavailable")
+                            </span>
+                            <div class="text-warning">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= car.Rating)
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star"></i>
+                                    }
+                                }
+                                <small class="text-muted">(@car.Rating)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="h5 text-primary mb-0">$@car.DailyRate/day</span>
+                            <small class="text-muted">@car.NumberOfRentals rentals</small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a asp-action="Details" asp-route-id="@car.Id" class="btn btn-primary">
+                                <i class="fas fa-info-circle"></i> View Details
+                            </a>
+                            @if (car.IsAvailable)
+                            {
+                                <a asp-controller="Rentals" asp-action="Create" asp-route-carId="@car.Id" class="btn btn-outline-success">
+                                    <i class="fas fa-key"></i> Rent Now
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-car text-muted" style="font-size: 4rem;"></i>
+            <h4 class="text-muted mt-3">No cars available</h4>
+            <p class="text-muted">Check back later for new vehicles.</p>
+        </div>
+    }
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    }
+</style>

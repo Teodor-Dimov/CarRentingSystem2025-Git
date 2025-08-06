@@ -1,8 +1,181 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Section -->
+<div class="hero-section text-white text-center py-5 mb-4" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Find Your Perfect Ride</h1>
+        <p class="lead mb-4">Choose from our extensive fleet of vehicles. From economy to luxury, we have the perfect car for every journey.</p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a asp-controller="Cars" asp-action="Index" class="btn btn-light btn-lg">
+                <i class="fas fa-car"></i> Browse Cars
+            </a>
+            <a asp-controller="Rentals" asp-action="Create" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-key"></i> Rent Now
+            </a>
+        </div>
+    </div>
 </div>
+
+<!-- Features Section -->
+<div class="container mb-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <i class="fas fa-shield-alt text-primary mb-3" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title">Safe & Reliable</h5>
+                    <p class="card-text">All our vehicles undergo regular maintenance and safety checks.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <i class="fas fa-dollar-sign text-success mb-3" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title">Best Prices</h5>
+                    <p class="card-text">Competitive rates with no hidden fees.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <i class="fas fa-clock text-info mb-3" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title">24/7 Support</h5>
+                    <p class="card-text">Round-the-clock customer support.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Section -->
+<div class="bg-light py-4 mb-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-3">
+                <h3 class="fw-bold text-primary">50+</h3>
+                <p class="text-muted">Vehicles Available</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h3 class="fw-bold text-success">1000+</h3>
+                <p class="text-muted">Happy Customers</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h3 class="fw-bold text-warning">4.8</h3>
+                <p class="text-muted">Average Rating</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h3 class="fw-bold text-danger">25+</h3>
+                <p class="text-muted">Locations</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Cars Section -->
+<div class="container mb-5">
+    <h2 class="text-center mb-4">Featured Cars</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-car text-primary mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="card-title">BMW X5</h5>
+                    <p class="card-text">Luxury SUV with premium features.</p>
+                    <span class="badge bg-success mb-2">Available</span>
+                    <p class="text-primary fw-bold">$120/day</p>
+                    <a href="#" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-car text-primary mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="card-title">Toyota Camry</h5>
+                    <p class="card-text">Comfortable sedan with excellent fuel economy.</p>
+                    <span class="badge bg-success mb-2">Available</span>
+                    <p class="text-primary fw-bold">$75/day</p>
+                    <a href="#" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-car text-primary mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="card-title">Ford Mustang</h5>
+                    <p class="card-text">Iconic American muscle car.</p>
+                    <span class="badge bg-success mb-2">Available</span>
+                    <p class="text-primary fw-bold">$95/day</p>
+                    <a href="#" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action Section -->
+<div class="bg-primary text-white py-5 mb-5">
+    <div class="container text-center">
+        <h2 class="mb-3">Ready to Start Your Journey?</h2>
+        <p class="lead mb-4">Join thousands of satisfied customers who trust us.</p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a asp-controller="Cars" asp-action="Index" class="btn btn-light btn-lg">
+                <i class="fas fa-car"></i> Browse All Cars
+            </a>
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="container mb-5">
+    <h2 class="text-center mb-4">How It Works</h2>
+    <div class="row">
+        <div class="col-md-3 text-center mb-4">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">1</div>
+            <h5>Choose Your Car</h5>
+            <p class="text-muted">Browse our selection of vehicles.</p>
+        </div>
+        <div class="col-md-3 text-center mb-4">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">2</div>
+            <h5>Book Online</h5>
+            <p class="text-muted">Select your dates and complete booking.</p>
+        </div>
+        <div class="col-md-3 text-center mb-4">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">3</div>
+            <h5>Pick Up</h5>
+            <p class="text-muted">Collect your vehicle from our location.</p>
+        </div>
+        <div class="col-md-3 text-center mb-4">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">4</div>
+            <h5>Enjoy Your Ride</h5>
+            <p class="text-muted">Drive with confidence and support.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        min-height: 50vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
