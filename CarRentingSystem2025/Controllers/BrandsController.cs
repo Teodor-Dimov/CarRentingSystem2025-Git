@@ -145,11 +145,22 @@ namespace CarRentingSystem2025.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var brand = await _context.Brands.FindAsync(id);
+            var brand = await _context.Brands
+                .Include(b => b.Cars)
+                .FirstOrDefaultAsync(b => b.Id == id);
+                
             if (brand != null)
             {
+                // Check if brand has associated cars
+                if (brand.Cars != null && brand.Cars.Any())
+                {
+                    TempData["ErrorMessage"] = "Cannot delete brand that has associated cars. Please remove or reassign the cars first.";
+                    return RedirectToAction(nameof(Index));
+                }
+                
                 _context.Brands.Remove(brand);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Brand deleted successfully!";
             }
             return RedirectToAction(nameof(Index));
         }

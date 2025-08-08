@@ -63,7 +63,7 @@
                                     <code>@car.LicensePlate</code>
                                 </td>
                                 <td>
-                                    <strong class="text-success">$@car.DailyRate</strong>
+                                    <strong class="text-success">€@car.DailyRate</strong>
                                 </td>
                                 <td>
                                     @if (car.IsAvailable)
@@ -81,7 +81,7 @@
                                         <div>
                                             <strong>@activeRental.Customer?.FirstName @activeRental.Customer?.LastName</strong><br>
                                             <small class="text-muted">@activeRental.Customer?.Email</small><br>
-                                            <small class="text-info">Until @activeRental.DropoffDate.ToString("MMM dd, yyyy")</small>
+                                            <small class="text-info">Until @activeRental.DropoffDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</small>
                                         </div>
                                     }
                                     else
@@ -91,10 +91,10 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/Admin/Cars/Edit/@car.Id" class="btn btn-sm btn-outline-primary">
+                                        <a asp-action="Edit" asp-route-id="@car.Id" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
-                                        <a href="/Admin/Cars/Delete/@car.Id" class="btn btn-sm btn-outline-danger">
+                                        <a asp-action="Delete" asp-route-id="@car.Id" class="btn btn-sm btn-outline-danger">
                                             <i class="fas fa-trash"></i> Delete
                                         </a>
                                     </div>

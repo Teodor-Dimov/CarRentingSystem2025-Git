@@ -33,10 +33,10 @@
                                 </dd>
 
                                 <dt class="col-sm-4">Pickup Date:</dt>
-                                <dd class="col-sm-8">@Model.PickupDate.ToString("MMM dd, yyyy HH:mm")</dd>
+                                <dd class="col-sm-8">@Model.PickupDate.ToString("MMM dd, yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)</dd>
 
                                 <dt class="col-sm-4">Dropoff Date:</dt>
-                                <dd class="col-sm-8">@Model.DropoffDate.ToString("MMM dd, yyyy HH:mm")</dd>
+                                <dd class="col-sm-8">@Model.DropoffDate.ToString("MMM dd, yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)</dd>
 
                                 <dt class="col-sm-4">Duration:</dt>
                                 <dd class="col-sm-8">@((Model.DropoffDate - Model.PickupDate).Days) days</dd>
@@ -112,12 +112,12 @@
                                     @if (Model.ActualPickupTime.HasValue)
                                     {
                                         <dt class="col-sm-6">Actual Pickup:</dt>
-                                        <dd class="col-sm-6">@Model.ActualPickupTime.Value.ToString("MMM dd, yyyy HH:mm")</dd>
+                                        <dd class="col-sm-6">@Model.ActualPickupTime.Value.ToString("MMM dd, yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)</dd>
                                     }
                                     @if (Model.ActualDropoffTime.HasValue)
                                     {
                                         <dt class="col-sm-6">Actual Dropoff:</dt>
-                                        <dd class="col-sm-6">@Model.ActualDropoffTime.Value.ToString("MMM dd, yyyy HH:mm")</dd>
+                                        <dd class="col-sm-6">@Model.ActualDropoffTime.Value.ToString("MMM dd, yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)</dd>
                                     }
                                 </dl>
                             </div>
@@ -150,12 +150,12 @@
                             <h6 class="text-muted">Timestamps</h6>
                             <dl class="row">
                                 <dt class="col-sm-3">Created:</dt>
-                                <dd class="col-sm-9">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</dd>
+                                <dd class="col-sm-9">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)</dd>
 
                                 @if (Model.UpdatedAt.HasValue)
                                 {
                                     <dt class="col-sm-3">Last Updated:</dt>
-                                    <dd class="col-sm-9">@Model.UpdatedAt.Value.ToString("MMM dd, yyyy HH:mm")</dd>
+                                    <dd class="col-sm-9">@Model.UpdatedAt.Value.ToString("MMM dd, yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)</dd>
                                 }
                             </dl>
                         </div>

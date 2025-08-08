@@ -56,16 +56,16 @@
                         <div class="col-md-6">
                             <dl class="row">
                                 <dt class="col-sm-4">Pickup Date:</dt>
-                                <dd class="col-sm-8">@Model.PickupDate.ToString("MMM dd, yyyy")</dd>
+                                <dd class="col-sm-8">@Model.PickupDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</dd>
 
                                 <dt class="col-sm-4">Dropoff Date:</dt>
-                                <dd class="col-sm-8">@Model.DropoffDate.ToString("MMM dd, yyyy")</dd>
+                                <dd class="col-sm-8">@Model.DropoffDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</dd>
 
                                 <dt class="col-sm-4">Total Amount:</dt>
-                                <dd class="col-sm-8"><strong>$@Model.TotalAmount.ToString("N2")</strong></dd>
+                                <dd class="col-sm-8"><strong>€@Model.TotalAmount.ToString("N2")</strong></dd>
 
                                 <dt class="col-sm-4">Created:</dt>
-                                <dd class="col-sm-8">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</dd>
+                                <dd class="col-sm-8">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)</dd>
                             </dl>
                         </div>
                     </div>
@@ -129,4 +129,5 @@
         </div>
     </div>
 </div>
+
 

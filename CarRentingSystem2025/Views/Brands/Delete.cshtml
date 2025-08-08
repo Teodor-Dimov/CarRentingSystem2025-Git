@@ -35,7 +35,7 @@
                         <dd class="col-sm-8">@Model.Headquarters</dd>
 
                         <dt class="col-sm-4">Founded Date:</dt>
-                        <dd class="col-sm-8">@(Model.FoundedDate?.ToString("MMM dd, yyyy") ?? "N/A")</dd>
+                        <dd class="col-sm-8">@(Model.FoundedDate?.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture) ?? "N/A")</dd>
 
                         <dt class="col-sm-4">Website:</dt>
                         <dd class="col-sm-8">
@@ -83,7 +83,7 @@
                         </div>
                     }
 
-                    <form asp-action="Delete">
+                    <form asp-action="Delete" method="post">
                         <input type="hidden" asp-for="Id" />
                         <div class="form-group">
                             <button type="submit" class="btn btn-danger">
@@ -99,4 +99,5 @@
         </div>
     </div>
 </div>
+
 

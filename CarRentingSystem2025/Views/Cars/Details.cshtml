@@ -90,11 +90,11 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6">
-                            <p><strong>Release Date:</strong> @Model.ReleaseDate.ToString("MMM dd, yyyy")</p>
-                            <p><strong>Last Service:</strong> @Model.LastServiceDate.ToString("MMM dd, yyyy")</p>
+                                                    <p><strong>Release Date:</strong> @Model.ReleaseDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
+                        <p><strong>Last Service:</strong> @Model.LastServiceDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
                         </div>
                         <div class="col-6">
-                            <p><strong>Next Service:</strong> @Model.NextServiceDate.ToString("MMM dd, yyyy")</p>
+                            <p><strong>Next Service:</strong> @Model.NextServiceDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
                             <p><strong>Featured:</strong> 
                                 <span class="badge @(Model.IsFeatured ? "bg-success" : "bg-secondary")">
                                     @(Model.IsFeatured ? "Yes" : "No")

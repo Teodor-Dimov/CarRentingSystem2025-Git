@@ -35,7 +35,7 @@
                         </div>
                         <div class="col-6">
                             <small class="text-muted">Member Since</small>
-                            <p class="mb-2">@Model.MembershipStartDate.ToString("MMM yyyy")</p>
+                            <p class="mb-2">@Model.MembershipStartDate.ToString("MMM yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
                         </div>
                     </div>
                     
@@ -148,8 +148,8 @@
                                                 <strong>@rental.Car?.Brand @rental.Car?.Model</strong><br>
                                                 <small class="text-muted">@rental.Car?.BrandEntity?.Name</small>
                                             </td>
-                                            <td>@rental.PickupDate.ToString("MMM dd, yyyy")</td>
-                                            <td>@rental.DropoffDate.ToString("MMM dd, yyyy")</td>
+                                            <td>@rental.PickupDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                            <td>@rental.DropoffDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</td>
                                             <td>
                                                 <span class="badge @(rental.Status switch {
                                                     "Pending" => "bg-warning",

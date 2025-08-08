@@ -4,6 +4,7 @@ using CarRentingSystem2025.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarRentingSystem2025.Controllers
 {
@@ -12,7 +13,7 @@ namespace CarRentingSystem2025.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ICacheService _cacheService;
         private readonly IPerformanceService _performanceService;
-        private const int PageSize = 6; // Number of cars per page
+        private const int PageSize = 1000; // Show all cars on one page
 
         public CarsController(ApplicationDbContext context, ICacheService cacheService, IPerformanceService performanceService)
         {
@@ -119,18 +120,8 @@ namespace CarRentingSystem2025.Controllers
                     cars = cars.Where(c => !rentedCarIds.Contains(c.Id));
                 }
 
-                // Get total count for pagination
-                var totalCars = await cars.CountAsync();
-                var totalPages = (int)Math.Ceiling((double)totalCars / PageSize);
-
-                // Ensure page is within valid range
-                page = Math.Max(1, Math.Min(page, totalPages > 0 ? totalPages : 1));
-
-                // Apply pagination
-                var carsList = await cars
-                    .Skip((page - 1) * PageSize)
-                    .Take(PageSize)
-                    .ToListAsync();
+                // Get all cars without pagination
+                var carsList = await cars.ToListAsync();
 
                 // Get filter options for dropdowns
                 var brands = await _context.Brands.Select(b => b.Name).Distinct().ToListAsync();
@@ -154,10 +145,7 @@ namespace CarRentingSystem2025.Controllers
                 ViewBag.BodyTypes = bodyTypes;
                 ViewBag.TransmissionTypes = transmissionTypes;
                 ViewBag.FuelTypes = fuelTypes;
-                ViewBag.CurrentPage = page;
-                ViewBag.TotalPages = totalPages;
-                ViewBag.TotalCars = totalCars;
-                ViewBag.PageSize = PageSize;
+                ViewBag.TotalCars = carsList.Count;
 
                 return View(carsList);
             });
@@ -233,6 +221,57 @@ namespace CarRentingSystem2025.Controllers
                 .ToListAsync();
 
             return View(popularCars);
+        }
+
+        // GET: Cars/Delete/5
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var car = await _context.Cars
+                .Include(c => c.BrandEntity)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+
+            return View(car);
+        }
+
+        // POST: Cars/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var car = await _context.Cars
+                .Include(c => c.Rentals)
+                .FirstOrDefaultAsync(c => c.Id == id);
+                
+            if (car != null)
+            {
+                // Check if car has associated rentals
+                if (car.Rentals != null && car.Rentals.Any())
+                {
+                    TempData["ErrorMessage"] = "Cannot delete car that has associated rentals. Please complete or cancel the rentals first.";
+                    return RedirectToAction(nameof(Index));
+                }
+                
+                _context.Cars.Remove(car);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Car deleted successfully!";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool CarExists(int id)
+        {
+            return _context.Cars.Any(e => e.Id == id);
         }
     }
 }

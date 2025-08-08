@@ -54,8 +54,8 @@
                                         <strong>@rental.Customer?.FirstName @rental.Customer?.LastName</strong><br>
                                         <small class="text-muted">@rental.Customer?.Email</small>
                                     </td>
-                                    <td>@rental.PickupDate.ToString("MMM dd, yyyy")</td>
-                                    <td>@rental.DropoffDate.ToString("MMM dd, yyyy")</td>
+                                    <td>@rental.PickupDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                    <td>@rental.DropoffDate.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)</td>
                                     <td>
                                         <span class="badge @(rental.Status switch {
                                             "Active" => "bg-success",
@@ -65,7 +65,7 @@
                                             _ => "bg-secondary"
                                         })">@rental.Status</span>
                                     </td>
-                                    <td>$@rental.TotalAmount.ToString("N2")</td>
+                                    <td>€@rental.TotalAmount.ToString("N2")</td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a asp-action="Details" asp-route-id="@rental.Id" 

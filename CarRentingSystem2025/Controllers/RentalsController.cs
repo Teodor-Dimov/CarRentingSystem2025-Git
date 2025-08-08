@@ -421,6 +421,53 @@ namespace CarRentingSystem2025.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Rentals/Delete/5
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var rental = await _context.Rentals
+                .Include(r => r.Car)
+                .ThenInclude(c => c.BrandEntity)
+                .Include(r => r.Customer)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (rental == null)
+            {
+                return NotFound();
+            }
+
+            return View(rental);
+        }
+
+        // POST: Rentals/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var rental = await _context.Rentals
+                .Include(r => r.Car)
+                .FirstOrDefaultAsync(r => r.Id == id);
+                
+            if (rental != null)
+            {
+                // If rental is active, make the car available again
+                if (rental.Status == "Active" && rental.Car != null)
+                {
+                    rental.Car.IsAvailable = true;
+                }
+                
+                _context.Rentals.Remove(rental);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Rental deleted successfully!";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         private bool RentalExists(int id)
         {
             return _context.Rentals.Any(e => e.Id == id);
