@@ -147,20 +147,29 @@ namespace CarRentingSystem2025.Controllers
         {
             var brand = await _context.Brands
                 .Include(b => b.Cars)
+                .ThenInclude(c => c.Rentals)
                 .FirstOrDefaultAsync(b => b.Id == id);
                 
             if (brand != null)
             {
-                // Check if brand has associated cars
-                if (brand.Cars != null && brand.Cars.Any())
+                // Delete all rentals for all cars of this brand
+                var allRentals = brand.Cars?.SelectMany(c => c.Rentals) ?? new List<Rental>();
+                if (allRentals.Any())
                 {
-                    TempData["ErrorMessage"] = "Cannot delete brand that has associated cars. Please remove or reassign the cars first.";
-                    return RedirectToAction(nameof(Index));
+                    _context.Rentals.RemoveRange(allRentals);
                 }
                 
+                // Delete all cars of this brand
+                if (brand.Cars != null && brand.Cars.Any())
+                {
+                    _context.Cars.RemoveRange(brand.Cars);
+                }
+                
+                // Delete the brand
                 _context.Brands.Remove(brand);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Brand deleted successfully!";
+                
+                TempData["SuccessMessage"] = $"Brand '{brand.Name}' and all its {brand.Cars?.Count ?? 0} cars with {allRentals.Count()} rentals have been deleted successfully!";
             }
             return RedirectToAction(nameof(Index));
         }

@@ -76,10 +76,16 @@
 
                     @if (Model.Cars?.Any() == true)
                     {
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Note:</strong> This brand has @Model.Cars.Count car(s) associated with it. 
-                            Deleting this brand will also remove the association with these cars.
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Warning:</strong> This brand has @Model.Cars.Count car(s) associated with it. 
+                            <strong>Deleting this brand will permanently delete:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>This brand (@Model.Name)</li>
+                                <li>All @Model.Cars.Count car(s) associated with this brand</li>
+                                <li>All rental records for these cars</li>
+                                <li>All customer rental history for these cars</li>
+                            </ul>
                         </div>
                     }
 

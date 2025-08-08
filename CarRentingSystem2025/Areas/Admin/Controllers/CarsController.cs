@@ -134,12 +134,23 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var car = await _context.Cars.FindAsync(id);
+            var car = await _context.Cars
+                .Include(c => c.Rentals)
+                .FirstOrDefaultAsync(c => c.Id == id);
+                
             if (car != null)
             {
+                // Delete all rentals for this car
+                if (car.Rentals != null && car.Rentals.Any())
+                {
+                    _context.Rentals.RemoveRange(car.Rentals);
+                }
+                
+                // Delete the car
                 _context.Cars.Remove(car);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Car deleted successfully!";
+                
+                TempData["SuccessMessage"] = $"Car '{car.Brand} {car.Model}' and all its {car.Rentals?.Count ?? 0} rentals have been deleted successfully!";
             }
 
             return RedirectToAction(nameof(Index));

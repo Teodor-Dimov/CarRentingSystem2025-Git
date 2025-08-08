@@ -255,16 +255,17 @@ namespace CarRentingSystem2025.Controllers
                 
             if (car != null)
             {
-                // Check if car has associated rentals
+                // Delete all rentals for this car
                 if (car.Rentals != null && car.Rentals.Any())
                 {
-                    TempData["ErrorMessage"] = "Cannot delete car that has associated rentals. Please complete or cancel the rentals first.";
-                    return RedirectToAction(nameof(Index));
+                    _context.Rentals.RemoveRange(car.Rentals);
                 }
                 
+                // Delete the car
                 _context.Cars.Remove(car);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Car deleted successfully!";
+                
+                TempData["SuccessMessage"] = $"Car '{car.Brand} {car.Model}' and all its {car.Rentals?.Count ?? 0} rentals have been deleted successfully!";
             }
             return RedirectToAction(nameof(Index));
         }

@@ -451,6 +451,7 @@ namespace CarRentingSystem2025.Controllers
         {
             var rental = await _context.Rentals
                 .Include(r => r.Car)
+                .Include(r => r.Customer)
                 .FirstOrDefaultAsync(r => r.Id == id);
                 
             if (rental != null)
@@ -461,9 +462,14 @@ namespace CarRentingSystem2025.Controllers
                     rental.Car.IsAvailable = true;
                 }
                 
+                // Store info for success message
+                var carInfo = $"{rental.Car?.Brand} {rental.Car?.Model}";
+                var customerInfo = $"{rental.Customer?.FirstName} {rental.Customer?.LastName}";
+                
                 _context.Rentals.Remove(rental);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Rental deleted successfully!";
+                
+                TempData["SuccessMessage"] = $"Rental for {carInfo} by {customerInfo} has been deleted successfully!";
             }
             return RedirectToAction(nameof(Index));
         }

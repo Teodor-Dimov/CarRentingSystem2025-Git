@@ -89,10 +89,16 @@
 
                     @if (Model.Rentals.Any())
                     {
-                        <div class="alert alert-info mt-3">
-                            <h6><i class="fas fa-info-circle"></i> Rental History</h6>
+                        <div class="alert alert-danger mt-3">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Warning - Cascading Delete</h6>
                             <p class="mb-2">This car has been rented @Model.NumberOfRentals times with an average rating of @Model.Rating stars.</p>
-                            <small class="text-muted">Deleting this car will also remove all associated rental records.</small>
+                            <strong>Deleting this car will permanently delete:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>This car (@Model.Brand @Model.Model)</li>
+                                <li>All @Model.Rentals.Count rental record(s) for this car</li>
+                                <li>All customer rental history for this car</li>
+                                <li>All reviews and ratings for this car</li>
+                            </ul>
                         </div>
                     }
 

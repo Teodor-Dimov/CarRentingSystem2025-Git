@@ -64,10 +64,16 @@
 
                     @if (Model.NumberOfRentals > 0)
                     {
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Note:</strong> This car has been rented @Model.NumberOfRentals times. 
-                            Deleting this car will also remove all associated rental records.
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Warning:</strong> This car has been rented @Model.NumberOfRentals times. 
+                            <strong>Deleting this car will permanently delete:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>This car (@Model.Brand @Model.Model)</li>
+                                <li>All @Model.NumberOfRentals rental record(s) for this car</li>
+                                <li>All customer rental history for this car</li>
+                                <li>All reviews and ratings for this car</li>
+                            </ul>
                         </div>
                     }
 
