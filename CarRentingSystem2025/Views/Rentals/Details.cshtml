@@ -1,0 +1,181 @@
+@model CarRentingSystem2025.Models.Rental
+@{
+    ViewData["Title"] = "Rental Details";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-car"></i> Rental Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Rental Information</h6>
+                            <dl class="row">
+                                <dt class="col-sm-4">Rental ID:</dt>
+                                <dd class="col-sm-8">@Model.Id</dd>
+
+                                <dt class="col-sm-4">Status:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-@(Model.Status switch {
+                                        "Active" => "success",
+                                        "Pending" => "warning",
+                                        "Completed" => "info",
+                                        "Cancelled" => "danger",
+                                        "Late" => "danger",
+                                        _ => "secondary"
+                                    })">@Model.Status</span>
+                                </dd>
+
+                                <dt class="col-sm-4">Pickup Date:</dt>
+                                <dd class="col-sm-8">@Model.PickupDate.ToString("MMM dd, yyyy HH:mm")</dd>
+
+                                <dt class="col-sm-4">Dropoff Date:</dt>
+                                <dd class="col-sm-8">@Model.DropoffDate.ToString("MMM dd, yyyy HH:mm")</dd>
+
+                                <dt class="col-sm-4">Duration:</dt>
+                                <dd class="col-sm-8">@((Model.DropoffDate - Model.PickupDate).Days) days</dd>
+
+                                <dt class="col-sm-4">Total Amount:</dt>
+                                <dd class="col-sm-8">
+                                    <strong class="text-success">$@Model.TotalAmount.ToString("F2")</strong>
+                                </dd>
+                            </dl>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Car Information</h6>
+                            <dl class="row">
+                                <dt class="col-sm-4">Car:</dt>
+                                <dd class="col-sm-8">@Model.Car?.DisplayName</dd>
+
+                                <dt class="col-sm-4">Brand:</dt>
+                                <dd class="col-sm-8">@Model.Car?.BrandEntity?.Name</dd>
+
+                                <dt class="col-sm-4">License Plate:</dt>
+                                <dd class="col-sm-8">@Model.Car?.LicensePlate</dd>
+
+                                <dt class="col-sm-4">Daily Rate:</dt>
+                                <dd class="col-sm-8">$@Model.Car?.DailyRate.ToString("F2")</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Customer Information</h6>
+                            <dl class="row">
+                                <dt class="col-sm-4">Customer:</dt>
+                                <dd class="col-sm-8">@Model.Customer?.DisplayName</dd>
+
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8">@Model.Customer?.Email</dd>
+
+                                <dt class="col-sm-4">Phone:</dt>
+                                <dd class="col-sm-8">@Model.Customer?.PhoneNumber</dd>
+                            </dl>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Location Details</h6>
+                            <dl class="row">
+                                <dt class="col-sm-4">Pickup Location:</dt>
+                                <dd class="col-sm-8">@(Model.PickupLocation ?? "Not specified")</dd>
+
+                                <dt class="col-sm-4">Dropoff Location:</dt>
+                                <dd class="col-sm-8">@(Model.DropoffLocation ?? "Not specified")</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.SpecialRequests))
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="text-muted">Special Requests</h6>
+                                <p class="mb-0">@Model.SpecialRequests</p>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.ActualPickupTime.HasValue || Model.ActualDropoffTime.HasValue)
+                    {
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Actual Times</h6>
+                                <dl class="row">
+                                    @if (Model.ActualPickupTime.HasValue)
+                                    {
+                                        <dt class="col-sm-6">Actual Pickup:</dt>
+                                        <dd class="col-sm-6">@Model.ActualPickupTime.Value.ToString("MMM dd, yyyy HH:mm")</dd>
+                                    }
+                                    @if (Model.ActualDropoffTime.HasValue)
+                                    {
+                                        <dt class="col-sm-6">Actual Dropoff:</dt>
+                                        <dd class="col-sm-6">@Model.ActualDropoffTime.Value.ToString("MMM dd, yyyy HH:mm")</dd>
+                                    }
+                                </dl>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.LateFees.HasValue || Model.DamageFees.HasValue)
+                    {
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Additional Fees</h6>
+                                <dl class="row">
+                                    @if (Model.LateFees.HasValue)
+                                    {
+                                        <dt class="col-sm-6">Late Fees:</dt>
+                                        <dd class="col-sm-6 text-danger">$@Model.LateFees.Value.ToString("F2")</dd>
+                                    }
+                                    @if (Model.DamageFees.HasValue)
+                                    {
+                                        <dt class="col-sm-6">Damage Fees:</dt>
+                                        <dd class="col-sm-6 text-danger">$@Model.DamageFees.Value.ToString("F2")</dd>
+                                    }
+                                </dl>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-muted">Timestamps</h6>
+                            <dl class="row">
+                                <dt class="col-sm-3">Created:</dt>
+                                <dd class="col-sm-9">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</dd>
+
+                                @if (Model.UpdatedAt.HasValue)
+                                {
+                                    <dt class="col-sm-3">Last Updated:</dt>
+                                    <dd class="col-sm-9">@Model.UpdatedAt.Value.ToString("MMM dd, yyyy HH:mm")</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                        
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -13,9 +13,12 @@ namespace CarRentingSystem2025.Models
         public int CustomerId { get; set; }
 
         [Required]
+        [FutureDate]
         public DateTime PickupDate { get; set; }
 
         [Required]
+        [FutureDate]
+        [RentalDateRange]
         public DateTime DropoffDate { get; set; }
 
         [Required]
@@ -71,8 +74,7 @@ namespace CarRentingSystem2025.Models
         public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
-        public virtual Car Car { get; set; } = null!;
-        public virtual Customer Customer { get; set; } = null!;
-        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public virtual Car? Car { get; set; }
+        public virtual Customer? Customer { get; set; }
     }
 } 

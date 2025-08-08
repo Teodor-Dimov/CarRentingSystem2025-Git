@@ -13,6 +13,60 @@
         </div>
     </div>
 
+    <!-- Search and Filter Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="get" asp-action="Index" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Search</label>
+                            <input type="text" name="searchString" class="form-control" placeholder="Search cars..." value="@ViewBag.SearchString" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Brand</label>
+                            <select name="brandFilter" class="form-select">
+                                <option value="">All Brands</option>
+                                @if (ViewBag.Brands != null)
+                                {
+                                    @foreach (var brand in ViewBag.Brands)
+                                    {
+                                        <option value="@brand" selected="@(ViewBag.BrandFilter == brand)">@brand</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Price Range</label>
+                            <select name="priceFilter" class="form-select">
+                                <option value="">All Prices</option>
+                                <option value="low" selected="@(ViewBag.PriceFilter == "low")">Under $50</option>
+                                <option value="medium" selected="@(ViewBag.PriceFilter == "medium")">$50 - $100</option>
+                                <option value="high" selected="@(ViewBag.PriceFilter == "high")">Over $100</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Availability</label>
+                            <select name="availabilityFilter" class="form-select">
+                                <option value="">All</option>
+                                <option value="available" selected="@(ViewBag.AvailabilityFilter == "available")">Available</option>
+                                <option value="unavailable" selected="@(ViewBag.AvailabilityFilter == "unavailable")">Unavailable</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var car in Model)
         {
@@ -95,8 +149,65 @@
     {
         <div class="text-center py-5">
             <i class="fas fa-car text-muted" style="font-size: 4rem;"></i>
-            <h4 class="text-muted mt-3">No cars available</h4>
-            <p class="text-muted">Check back later for new vehicles.</p>
+            <h4 class="text-muted mt-3">No cars found</h4>
+            <p class="text-muted">Try adjusting your search criteria.</p>
+            <a asp-action="Index" class="btn btn-primary">
+                <i class="fas fa-times"></i> Clear Filters
+            </a>
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Car pagination">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" 
+                                   asp-route-searchString="@ViewBag.SearchString" 
+                                   asp-route-brandFilter="@ViewBag.BrandFilter" 
+                                   asp-route-priceFilter="@ViewBag.PriceFilter" 
+                                   asp-route-availabilityFilter="@ViewBag.AvailabilityFilter">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i" 
+                                   asp-route-searchString="@ViewBag.SearchString" 
+                                   asp-route-brandFilter="@ViewBag.BrandFilter" 
+                                   asp-route-priceFilter="@ViewBag.PriceFilter" 
+                                   asp-route-availabilityFilter="@ViewBag.AvailabilityFilter">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" 
+                                   asp-route-searchString="@ViewBag.SearchString" 
+                                   asp-route-brandFilter="@ViewBag.BrandFilter" 
+                                   asp-route-priceFilter="@ViewBag.PriceFilter" 
+                                   asp-route-availabilityFilter="@ViewBag.AvailabilityFilter">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+                <div class="text-center text-muted">
+                    Showing @(((ViewBag.CurrentPage - 1) * ViewBag.PageSize) + 1) to @Math.Min(ViewBag.CurrentPage * ViewBag.PageSize, ViewBag.TotalCars) of @ViewBag.TotalCars cars
+                </div>
+            </div>
         </div>
     }
 </div>

@@ -1,0 +1,174 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using CarRentingSystem2025.Data;
+using CarRentingSystem2025.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace CarRentingSystem2025.Areas.Admin.Controllers
+{
+    [Area("Admin")]
+    [Authorize(Roles = "Administrator")]
+    public class CarsController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public CarsController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Admin/Cars
+        public async Task<IActionResult> Index()
+        {
+            var cars = await _context.Cars
+                .Include(c => c.BrandEntity)
+                .Include(c => c.Rentals.Where(r => r.Status == "Active"))
+                .ThenInclude(r => r.Customer)
+                .ToListAsync();
+
+            return View(cars);
+        }
+
+        // GET: Admin/Cars/Create
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name");
+            return View();
+        }
+
+        // POST: Admin/Cars/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("BrandId,Brand,Model,Year,LicensePlate,DailyRate,Color,FuelType,Transmission,Seats,Mileage,EngineSize,BodyType,DriveType,ReleaseDate,LastServiceDate,NextServiceDate,Features,Description,ImageUrl,IsAvailable,IsFeatured")] Car car)
+        {
+            if (ModelState.IsValid)
+            {
+                car.CreatedAt = DateTime.Now;
+                _context.Add(car);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Car created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name", car.BrandId);
+            return View(car);
+        }
+
+        // GET: Admin/Cars/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var car = await _context.Cars
+                .Include(c => c.BrandEntity)
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+            ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name", car.BrandId);
+            return View(car);
+        }
+
+        // POST: Admin/Cars/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,BrandId,Brand,Model,Year,LicensePlate,DailyRate,Color,FuelType,Transmission,Seats,Mileage,EngineSize,BodyType,DriveType,ReleaseDate,LastServiceDate,NextServiceDate,Features,Description,ImageUrl,IsAvailable,IsFeatured,Rating,NumberOfRentals,CreatedAt,UpdatedAt")] Car car)
+        {
+            if (id != car.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    car.UpdatedAt = DateTime.Now;
+                    _context.Update(car);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Car updated successfully!";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CarExists(car.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name", car.BrandId);
+            return View(car);
+        }
+
+        // GET: Admin/Cars/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var car = await _context.Cars
+                .Include(c => c.BrandEntity)
+                .Include(c => c.Rentals)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+
+            return View(car);
+        }
+
+        // POST: Admin/Cars/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var car = await _context.Cars.FindAsync(id);
+            if (car != null)
+            {
+                _context.Cars.Remove(car);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Car deleted successfully!";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Admin/Cars/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var car = await _context.Cars
+                .Include(c => c.BrandEntity)
+                .Include(c => c.Rentals)
+                .ThenInclude(r => r.Customer)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+
+            return View(car);
+        }
+
+        private bool CarExists(int id)
+        {
+            return _context.Cars.Any(e => e.Id == id);
+        }
+    }
+}

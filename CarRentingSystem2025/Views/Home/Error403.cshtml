@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-page">
+                <i class="fas fa-ban text-danger" style="font-size: 6rem;"></i>
+                <h1 class="display-1 text-muted">403</h1>
+                <h2 class="mb-4">Access Denied</h2>
+                <p class="lead text-muted mb-4">
+                    You don't have permission to access this resource.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Go Home
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-page {
+        padding: 2rem 0;
+    }
+</style>
+

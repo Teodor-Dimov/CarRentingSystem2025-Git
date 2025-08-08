@@ -57,12 +57,12 @@ namespace CarRentingSystem2025.Controllers
                         Email = model.Email,
                         PhoneNumber = model.PhoneNumber ?? "",
                         DateOfBirth = model.DateOfBirth ?? DateTime.Now,
-                        Address = model.Address ?? "",
-                        City = model.City ?? "",
-                        PostalCode = model.ZipCode ?? "",
-                        Country = model.Country ?? "",
-                        DriverLicenseNumber = model.LicenseNumber ?? "",
-                        DriverLicenseExpiry = model.LicenseExpiryDate ?? DateTime.Now.AddYears(5),
+                        Address = "",
+                        City = "",
+                        PostalCode = "",
+                        Country = "",
+                        DriverLicenseNumber = "",
+                        DriverLicenseExpiry = DateTime.Now.AddYears(5),
                         MembershipLevel = "Standard",
                         MembershipStartDate = DateTime.Now,
                         MembershipExpiryDate = DateTime.Now.AddYears(1),
@@ -89,24 +89,56 @@ namespace CarRentingSystem2025.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (ModelState.IsValid)
             {
+                // Check if user exists
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View(model);
+                }
+
+                // Check if user is locked out
+                if (await _userManager.IsLockedOutAsync(user))
+                {
+                    ModelState.AddModelError(string.Empty, "Account is locked out.");
+                    return View(model);
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
                 if (result.Succeeded)
                 {
+                    // Check if there's a return URL
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "Account is locked out.");
+                }
+                else if (result.RequiresTwoFactor)
+                {
+                    ModelState.AddModelError(string.Empty, "Two-factor authentication is required.");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                }
             }
 
             return View(model);
@@ -117,6 +149,11 @@ namespace CarRentingSystem2025.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 
@@ -150,21 +187,6 @@ namespace CarRentingSystem2025.Controllers
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
-
-        public string? Address { get; set; }
-        public string? City { get; set; }
-        public string? State { get; set; }
-
-        [Display(Name = "Zip Code")]
-        public string? ZipCode { get; set; }
-        public string? Country { get; set; }
-
-        [Display(Name = "License Number")]
-        public string? LicenseNumber { get; set; }
-
-        [Display(Name = "License Expiry Date")]
-        [DataType(DataType.Date)]
-        public DateTime? LicenseExpiryDate { get; set; }
     }
 
     public class LoginViewModel

@@ -23,6 +23,7 @@ namespace CarRentingSystem2025.Models
 
         [Required]
         [StringLength(20)]
+        [ValidLicensePlate]
         public string LicensePlate { get; set; } = string.Empty;
 
         [Required]

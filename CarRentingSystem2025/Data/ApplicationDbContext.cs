@@ -14,7 +14,6 @@ namespace CarRentingSystem2025.Data
         public DbSet<Car>? Cars { get; set; }
         public DbSet<Customer>? Customers { get; set; }
         public DbSet<Rental>? Rentals { get; set; }
-        public DbSet<Payment>? Payments { get; set; }
         public DbSet<Brand>? Brands { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -34,11 +33,7 @@ namespace CarRentingSystem2025.Data
                 .HasForeignKey(r => r.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Payment>()
-                .HasOne(p => p.Rental)
-                .WithMany(r => r.Payments)
-                .HasForeignKey(p => p.RentalId)
-                .OnDelete(DeleteBehavior.Cascade);
+
 
             builder.Entity<Car>()
                 .HasOne(c => c.BrandEntity)

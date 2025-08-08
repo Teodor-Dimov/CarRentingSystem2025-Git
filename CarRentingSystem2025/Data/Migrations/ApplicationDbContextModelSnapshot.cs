@@ -332,92 +332,10 @@ namespace CarRentingSystem2025.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("CarRentingSystem2025.Models.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AccountNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("BankName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("CardLastFourDigits")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("CardType")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("FailureReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("PaymentType")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<decimal?>("RefundAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("RefundDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RefundReason")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("RentalId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("TransactionId")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RentalId");
-
-                    b.ToTable("Payments");
-                });
 
             modelBuilder.Entity("CarRentingSystem2025.Models.Rental", b =>
                 {
@@ -724,16 +642,7 @@ namespace CarRentingSystem2025.Data.Migrations
                     b.Navigation("BrandEntity");
                 });
 
-            modelBuilder.Entity("CarRentingSystem2025.Models.Payment", b =>
-                {
-                    b.HasOne("CarRentingSystem2025.Models.Rental", "Rental")
-                        .WithMany("Payments")
-                        .HasForeignKey("RentalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
-                    b.Navigation("Rental");
-                });
 
             modelBuilder.Entity("CarRentingSystem2025.Models.Rental", b =>
                 {
@@ -820,10 +729,7 @@ namespace CarRentingSystem2025.Data.Migrations
                     b.Navigation("Rentals");
                 });
 
-            modelBuilder.Entity("CarRentingSystem2025.Models.Rental", b =>
-                {
-                    b.Navigation("Payments");
-                });
+
 #pragma warning restore 612, 618
         }
     }

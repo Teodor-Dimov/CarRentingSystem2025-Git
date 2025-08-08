@@ -1,0 +1,249 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+        <div class="text-muted">
+            <i class="fas fa-clock"></i> @DateTime.Now.ToString("MMM dd, yyyy HH:mm")
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Cars
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalCars</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-car fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Available Cars
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.AvailableCars</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Active Rentals
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.ActiveRentals</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-key fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Total Customers
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalCustomers</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-primary h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                                    <h5 class="card-title">Manage Cars</h5>
+                                    <p class="card-text">Add, edit, and manage all vehicles in the system.</p>
+                                    <a href="/Admin/Cars" class="btn btn-primary">
+                                        <i class="fas fa-arrow-right"></i> Go to Cars
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-success h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-key fa-3x text-success mb-3"></i>
+                                    <h5 class="card-title">Manage Rentals</h5>
+                                    <p class="card-text">View and manage all rental transactions.</p>
+                                    <a href="/Admin/Rentals" class="btn btn-success">
+                                        <i class="fas fa-arrow-right"></i> Go to Rentals
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-info h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-tag fa-3x text-info mb-3"></i>
+                                    <h5 class="card-title">Manage Brands</h5>
+                                    <p class="card-text">Add and manage car brands and manufacturers.</p>
+                                    <a href="/Brands" class="btn btn-info">
+                                        <i class="fas fa-arrow-right"></i> Go to Brands
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-warning h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-plus fa-3x text-warning mb-3"></i>
+                                    <h5 class="card-title">New Rental</h5>
+                                    <p class="card-text">Create a new rental transaction for customers.</p>
+                                    <a href="/Rentals/Create" class="btn btn-warning">
+                                        <i class="fas fa-arrow-right"></i> Create Rental
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-clock"></i> All Rentals
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.RecentRentals != null && ((IEnumerable<dynamic>)ViewBag.RecentRentals).Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Car</th>
+                                        <th>Customer</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var rental in ViewBag.RecentRentals)
+                                    {
+                                        <tr>
+                                            <td>@rental.Car?.DisplayName</td>
+                                            <td>@rental.Customer?.DisplayName</td>
+                                            <td>
+                                                <span class="badge @(rental.Status switch {
+                                                    "Active" => "bg-success",
+                                                    "Completed" => "bg-info",
+                                                    "Cancelled" => "bg-warning",
+                                                    "Overdue" => "bg-danger",
+                                                    _ => "bg-secondary"
+                                                })">@rental.Status</span>
+                                            </td>
+                                            <td>@rental.CreatedAt.ToString("MMM dd")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">No recent rentals found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-car"></i> All Cars
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.AvailableCarsList != null && ((IEnumerable<dynamic>)ViewBag.AvailableCarsList).Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Car</th>
+                                        <th>Brand</th>
+                                        <th>Daily Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var car in ViewBag.AvailableCarsList)
+                                    {
+                                        <tr>
+                                            <td>@car.DisplayName</td>
+                                            <td>@car.BrandEntity?.Name</td>
+                                            <td>$@car.DailyRate.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">No available cars found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,323 @@
+@model CarRentingSystem2025.Models.Car
+@{
+    ViewData["Title"] = $"{Model.Brand} {Model.Model} - Details";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-car"></i> @Model.Brand @Model.Model - Details</h2>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Cars
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Car Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Basic Information</h6>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Brand:</strong></td>
+                                    <td>@Model.BrandEntity?.Name</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Model:</strong></td>
+                                    <td>@Model.Model</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Year:</strong></td>
+                                    <td>@Model.Year</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>License Plate:</strong></td>
+                                    <td><span class="badge bg-secondary">@Model.LicensePlate</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Color:</strong></td>
+                                    <td>@Model.Color</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Daily Rate:</strong></td>
+                                    <td><span class="text-success fw-bold">$@Model.DailyRate</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Technical Specifications</h6>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Engine Size:</strong></td>
+                                    <td>@Model.EngineSize</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Body Type:</strong></td>
+                                    <td>@Model.BodyType</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Drive Type:</strong></td>
+                                    <td>@Model.DriveType</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mileage:</strong></td>
+                                    <td>@Model.Mileage.ToString("N0") km</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fuel Type:</strong></td>
+                                    <td>@Model.FuelType</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Transmission:</strong></td>
+                                    <td>@Model.Transmission</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Features))
+                    {
+                        <div class="mt-4">
+                            <h6 class="text-primary">Features</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var feature in Model.Features.Split(','))
+                                {
+                                    <span class="badge bg-light text-dark">@feature.Trim()</span>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Service Information</h6>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Last Service:</strong></td>
+                                    <td>@Model.LastServiceDate.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Next Service:</strong></td>
+                                    <td>@Model.NextServiceDate.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Release Date:</strong></td>
+                                    <td>@Model.ReleaseDate.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Rental Statistics</h6>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Total Rentals:</strong></td>
+                                    <td>@Model.NumberOfRentals</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Rating:</strong></td>
+                                    <td>
+                                        <div class="text-warning">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= Model.Rating)
+                                                {
+                                                    <i class="fas fa-star"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="far fa-star"></i>
+                                                }
+                                            }
+                                            <span class="text-muted ms-1">(@Model.Rating/5)</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>
+                                        <span class="badge bg-@(Model.IsAvailable ? "success" : "warning")">
+                                            @(Model.IsAvailable ? "Available" : "Currently Rented")
+                                        </span>
+                                    </td>
+                                </tr>
+                                @if (Model.IsFeatured)
+                                {
+                                    <tr>
+                                        <td><strong>Featured:</strong></td>
+                                        <td><span class="badge bg-info">Featured Car</span></td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="mt-4">
+                            <h6 class="text-primary">Description</h6>
+                            <p class="mb-0">@Model.Description</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (Model.Rentals.Any())
+            {
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history"></i> Rental History
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Pickup Date</th>
+                                        <th>Dropoff Date</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var rental in Model.Rentals.OrderByDescending(r => r.PickupDate))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@rental.Customer?.FirstName @rental.Customer?.LastName</strong><br>
+                                                <small class="text-muted">@rental.Customer?.Email</small>
+                                            </td>
+                                            <td>@rental.PickupDate.ToString("MMM dd, yyyy")</td>
+                                            <td>@rental.DropoffDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <span class="badge @(rental.Status switch {
+                                                    "Pending" => "bg-warning",
+                                                    "Active" => "bg-success",
+                                                    "Completed" => "bg-info",
+                                                    "Cancelled" => "bg-danger",
+                                                    _ => "bg-secondary"
+                                                })">
+                                                    @rental.Status
+                                                </span>
+                                            </td>
+                                            <td><strong>$@rental.TotalAmount.ToString("F2")</strong></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-bar"></i> Quick Statistics
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h4 class="text-primary">@Model.NumberOfRentals</h4>
+                            <small class="text-muted">Total Rentals</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-warning">@Model.Rating</h4>
+                            <small class="text-muted">Rating</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h6 class="text-success">@Model.DailyRate.ToString("C")</h6>
+                            <small class="text-muted">Daily Rate</small>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-info">@Model.Mileage.ToString("N0") km</h6>
+                            <small class="text-muted">Mileage</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tools"></i> Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Car
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete Car
+                        </a>
+                        <a asp-area="" asp-controller="Rentals" asp-action="Create" asp-route-carId="@Model.Id" class="btn btn-success">
+                            <i class="fas fa-calendar-plus"></i> Create Rental
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @{
+                var activeRental = Model.Rentals.FirstOrDefault(r => r.Status == "Active");
+            }
+            @if (activeRental != null)
+            {
+                <div class="card shadow mt-3">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-user"></i> Current Renter
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <i class="fas fa-user-circle fa-3x text-primary mb-3"></i>
+                            <h6>@activeRental.Customer?.FirstName @activeRental.Customer?.LastName</h6>
+                            <p class="text-muted mb-2">@activeRental.Customer?.Email</p>
+                            <small class="text-info">
+                                Until @activeRental.DropoffDate.ToString("MMM dd, yyyy")
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow mt-3">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-check-circle"></i> Availability Status
+                        </h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-car fa-3x text-success mb-3"></i>
+                        <h6 class="text-success">Available for Rent</h6>
+                        <p class="text-muted mb-0">No active rentals</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+

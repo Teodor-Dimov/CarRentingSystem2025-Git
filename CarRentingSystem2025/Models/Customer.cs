@@ -20,11 +20,13 @@ namespace CarRentingSystem2025.Models
 
         [Required]
         [EmailAddress]
+        [ValidEmailDomain]
         [StringLength(100)]
         public string Email { get; set; } = string.Empty;
 
         [Required]
         [Phone]
+        [ValidPhoneNumber]
         [StringLength(20)]
         public string PhoneNumber { get; set; } = string.Empty;
 
@@ -50,6 +52,7 @@ namespace CarRentingSystem2025.Models
 
         public DateTime DriverLicenseExpiry { get; set; }
 
+        [MinimumAge(18)]
         public DateTime DateOfBirth { get; set; }
 
         [StringLength(100)]

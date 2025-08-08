@@ -1,2 +1,65 @@
 ﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Custom validation for rental dates
+    $.validator.addMethod("futureDate", function(value, element) {
+        if (value === "") return true;
+        var selectedDate = new Date(value);
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return selectedDate > today;
+    }, "Date must be in the future.");
+
+    $.validator.addMethod("validLicensePlate", function(value, element) {
+        if (value === "") return true;
+        return /^[A-Z0-9]{3,8}$/.test(value);
+    }, "License plate must be 3-8 alphanumeric characters.");
+
+    $.validator.addMethod("minimumAge", function(value, element, param) {
+        if (value === "") return true;
+        var birthDate = new Date(value);
+        var today = new Date();
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age >= param;
+    }, "You must be at least {0} years old.");
+
+    // Enhanced form validation
+    $("form").on("submit", function(e) {
+        var form = $(this);
+        if (!form.valid()) {
+            e.preventDefault();
+            // Scroll to first error
+            var firstError = form.find(".field-validation-error:first");
+            if (firstError.length) {
+                $('html, body').animate({
+                    scrollTop: firstError.offset().top - 100
+                }, 500);
+            }
+        }
+    });
+
+    // Real-time validation feedback
+    $("input, select, textarea").on("blur", function() {
+        $(this).valid();
+    });
+
+    // Custom error styling
+    $(".field-validation-error").each(function() {
+        $(this).closest(".form-group").addClass("has-error");
+    });
+
+    $("input, select, textarea").on("input", function() {
+        if ($(this).valid()) {
+            $(this).closest(".form-group").removeClass("has-error").addClass("has-success");
+        } else {
+            $(this).closest(".form-group").removeClass("has-success").addClass("has-error");
+        }
+    });
+});
+</script>

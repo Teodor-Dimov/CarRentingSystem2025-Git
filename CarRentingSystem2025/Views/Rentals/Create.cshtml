@@ -1,0 +1,225 @@
+@model CarRentingSystem2025.Models.Rental
+@{
+    ViewData["Title"] = "Create Rental";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-car"></i> Create New Rental
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.SelectedCar != null)
+                    {
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Selected Car</h6>
+                            <p class="mb-0">
+                                <strong>@ViewBag.SelectedCar.Brand @ViewBag.SelectedCar.Model</strong> - 
+                                @ViewBag.SelectedCar.BrandEntity?.Name | 
+                                Daily Rate: <strong>$@ViewBag.SelectedCar.DailyRate.ToString("F2")</strong>
+                            </p>
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post" id="rentalForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" name="CustomerId" value="@ViewBag.CustomerId" />
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="CarId" class="form-label">Select Car *</label>
+                                <select asp-for="CarId" class="form-select" asp-items="ViewBag.CarId" required>
+                                    <option value="">-- Select a car --</option>
+                                </select>
+                                <span asp-validation-for="CarId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PickupDate" class="form-label">Start Date *</label>
+                                <input asp-for="PickupDate" class="form-control" type="datetime-local" required />
+                                <span asp-validation-for="PickupDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DropoffDate" class="form-label">End Date *</label>
+                                <input asp-for="DropoffDate" class="form-control" type="datetime-local" required />
+                                <span asp-validation-for="DropoffDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PickupLocation" class="form-label">Pickup Location</label>
+                                <input asp-for="PickupLocation" class="form-control" placeholder="e.g., Main Office" />
+                                <span asp-validation-for="PickupLocation" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DropoffLocation" class="form-label">Dropoff Location</label>
+                                <input asp-for="DropoffLocation" class="form-control" placeholder="e.g., Airport Branch" />
+                                <span asp-validation-for="DropoffLocation" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Total Amount (Auto-calculated)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="text" class="form-control" readonly id="totalAmount" placeholder="Will be calculated automatically" value="0.00" />
+                            </div>
+                            <small class="text-muted">This will be calculated automatically based on rental duration and car daily rate</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SpecialRequests" class="form-label">Special Requests</label>
+                            <textarea asp-for="SpecialRequests" class="form-control" rows="3" 
+                                      placeholder="Any special requests or notes..."></textarea>
+                            <span asp-validation-for="SpecialRequests" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary" id="createRentalBtn">
+                                <i class="fas fa-save"></i> Create Rental
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Calculate total amount when dates or car changes
+        function calculateTotal() {
+            const carSelect = document.getElementById('CarId');
+            const pickupDate = document.getElementById('PickupDate');
+            const dropoffDate = document.getElementById('DropoffDate');
+            const totalAmount = document.getElementById('totalAmount');
+            
+            console.log('Calculating total...');
+            console.log('Car selected:', carSelect.value);
+            console.log('Pickup date:', pickupDate.value);
+            console.log('Dropoff date:', dropoffDate.value);
+            
+            if (carSelect.value && pickupDate.value && dropoffDate.value) {
+                const startDate = new Date(pickupDate.value);
+                const endDate = new Date(dropoffDate.value);
+                const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+                
+                console.log('Days calculated:', days);
+                
+                if (days > 0) {
+                    // Get car daily rate from the selected option text
+                    const selectedOption = carSelect.options[carSelect.selectedIndex];
+                    console.log('Selected option text:', selectedOption.text);
+                    
+                    const dailyRateText = selectedOption.text.match(/\$(\d+(?:\.\d{2})?)/);
+                    if (dailyRateText) {
+                        const dailyRate = parseFloat(dailyRateText[1]);
+                        const total = dailyRate * days;
+                        totalAmount.value = total.toFixed(2);
+                        console.log('Total calculated:', total.toFixed(2));
+                    } else {
+                        // Fallback: try to get daily rate from a different pattern
+                        const rateMatch = selectedOption.text.match(/(\d+(?:\.\d{2})?)\/day/);
+                        if (rateMatch) {
+                            const dailyRate = parseFloat(rateMatch[1]);
+                            const total = dailyRate * days;
+                            totalAmount.value = total.toFixed(2);
+                            console.log('Total calculated (fallback):', total.toFixed(2));
+                        } else {
+                            // Set a default value to prevent validation errors
+                            totalAmount.value = '0.00';
+                            console.log('No rate found, setting default');
+                        }
+                    }
+                } else {
+                    totalAmount.value = '0.00';
+                    console.log('Invalid dates, setting default');
+                }
+            } else {
+                totalAmount.value = '0.00';
+                console.log('Missing required fields, setting default');
+            }
+            
+            // Ensure the value is always a valid number
+            if (!totalAmount.value || totalAmount.value === '0' || totalAmount.value === '') {
+                totalAmount.value = '0.00';
+            }
+        }
+        
+        // Add event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const carSelect = document.getElementById('CarId');
+            const pickupDate = document.getElementById('PickupDate');
+            const dropoffDate = document.getElementById('DropoffDate');
+            const form = document.querySelector('form');
+            
+            if (carSelect) carSelect.addEventListener('change', calculateTotal);
+            if (pickupDate) pickupDate.addEventListener('change', calculateTotal);
+            if (dropoffDate) dropoffDate.addEventListener('change', calculateTotal);
+            
+            // Add form submission handler
+            if (form) {
+                console.log('Form found, adding submit listener');
+                form.addEventListener('submit', function(e) {
+                    console.log('=== FORM SUBMIT EVENT FIRED ===');
+                    const carSelect = document.getElementById('CarId');
+                    const pickupDate = document.getElementById('PickupDate');
+                    const dropoffDate = document.getElementById('DropoffDate');
+                    
+                    console.log('Car selected:', carSelect.value);
+                    console.log('Pickup date:', pickupDate.value);
+                    console.log('Dropoff date:', dropoffDate.value);
+                    
+                    // Final validation
+                    if (!carSelect.value) {
+                        console.log('No car selected, preventing submission');
+                        e.preventDefault();
+                        alert('Please select a car.');
+                        return false;
+                    }
+                    
+                    if (!pickupDate.value || !dropoffDate.value) {
+                        console.log('Missing dates, preventing submission');
+                        e.preventDefault();
+                        alert('Please select both pickup and dropoff dates.');
+                        return false;
+                    }
+                    
+                    console.log('Form submission allowed - proceeding with submit');
+                    console.log('Form action:', form.action);
+                    console.log('Form method:', form.method);
+                    
+                    // Allow the form to submit naturally
+                    console.log('Allowing form submission to proceed...');
+                    
+                    // Add a small delay to see the log before the page changes
+                    setTimeout(() => {
+                        console.log('Form submission proceeding...');
+                    }, 100);
+                });
+            } else {
+                console.log('Form not found!');
+            }
+            
+            console.log('Event listeners added');
+            
+            // Note: We're not adding a click handler to the button
+            // The button is type="submit" so it should naturally submit the form
+            console.log('Form setup complete');
+        });
+    </script>
+}
+
