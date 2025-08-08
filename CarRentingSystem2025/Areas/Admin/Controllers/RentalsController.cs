@@ -31,8 +31,11 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Rentals/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            Console.WriteLine($"Admin Rentals Details action called with id: {id}");
+            
             if (id == null)
             {
+                Console.WriteLine("Admin Rentals Details: id is null");
                 return NotFound();
             }
 
@@ -44,17 +47,22 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             if (rental == null)
             {
+                Console.WriteLine($"Admin Rentals Details: rental with id {id} not found");
                 return NotFound();
             }
 
+            Console.WriteLine($"Admin Rentals Details: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
             return View(rental);
         }
 
         // GET: Admin/Rentals/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            Console.WriteLine($"Admin Rentals Edit action called with id: {id}");
+            
             if (id == null)
             {
+                Console.WriteLine("Admin Rentals Edit: id is null");
                 return NotFound();
             }
 
@@ -65,9 +73,11 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             if (rental == null)
             {
+                Console.WriteLine($"Admin Rentals Edit: rental with id {id} not found");
                 return NotFound();
             }
 
+            Console.WriteLine($"Admin Rentals Edit: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
             ViewBag.Cars = await _context.Cars.ToListAsync();
             ViewBag.Customers = await _context.Customers.ToListAsync();
             ViewBag.StatusOptions = new[] { "Active", "Completed", "Cancelled", "Overdue" };

@@ -57,8 +57,11 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Cars/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            Console.WriteLine($"Edit action called with id: {id}");
+            
             if (id == null)
             {
+                Console.WriteLine("Edit action: id is null");
                 return NotFound();
             }
 
@@ -67,8 +70,11 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (car == null)
             {
+                Console.WriteLine($"Edit action: car with id {id} not found");
                 return NotFound();
             }
+            
+            Console.WriteLine($"Edit action: found car {car.Brand} {car.Model}");
             ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name", car.BrandId);
             return View(car);
         }
@@ -83,10 +89,26 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            // Log validation errors for debugging
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"Validation Error: {error.ErrorMessage}");
+                }
+            }
+            
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Get the brand name from the selected brand
+                    var brand = await _context.Brands.FindAsync(car.BrandId);
+                    if (brand != null)
+                    {
+                        car.Brand = brand.Name;
+                    }
+                    
                     car.UpdatedAt = DateTime.Now;
                     _context.Update(car);
                     await _context.SaveChangesAsync();
