@@ -35,9 +35,9 @@ namespace CarRentingSystem2025.Controllers
             }
                          else
              {
-                 // Regular users see only their own rentals
-                 var currentUser = await _userManager.GetUserAsync(User);
-                 var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == currentUser.Id);
+                                   // Regular users see only their own rentals
+                  var currentUser = await _userManager.GetUserAsync(User);
+                  var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == currentUser!.Id);
                  
                  if (customer == null)
                  {
@@ -92,7 +92,7 @@ namespace CarRentingSystem2025.Controllers
                 return RedirectToAction("Login", "Account");
             }
             
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == currentUser.Id);
+                         var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == currentUser!.Id);
             
             if (customer == null)
             {
@@ -160,7 +160,7 @@ namespace CarRentingSystem2025.Controllers
              Console.WriteLine($"Current user retrieved: {currentUser?.UserName}");
              
              Console.WriteLine("Getting customer profile...");
-             var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == currentUser.Id);
+             var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == currentUser!.Id);
              Console.WriteLine($"Customer profile retrieved: {customer?.Id}");
             
             if (customer == null)

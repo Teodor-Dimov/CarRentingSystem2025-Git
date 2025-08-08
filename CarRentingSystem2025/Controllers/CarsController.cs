@@ -28,152 +28,140 @@ namespace CarRentingSystem2025.Controllers
         {
             return await _performanceService.MeasureAsync("CarsIndex", async () =>
             {
-                var cacheKey = $"cars_index_{searchString}_{brandFilter}_{priceFilter}_{availabilityFilter}_{bodyTypeFilter}_{transmissionFilter}_{fuelTypeFilter}_{minPrice}_{maxPrice}_{page}";
-                
-                // Try to get from cache first
-                if (_cacheService.TryGetValue(cacheKey, out var cachedResult))
-                {
-                    return cachedResult as IActionResult;
-                }
-
                 var cars = _context.Cars.Include(c => c.BrandEntity).AsQueryable();
 
-            // Search functionality
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                cars = cars.Where(c =>
-                    c.Brand.Contains(searchString) ||
-                    c.Model.Contains(searchString) ||
-                    c.LicensePlate.Contains(searchString) ||
-                    c.BrandEntity.Name.Contains(searchString) ||
-                    c.Features.Contains(searchString));
-            }
-
-            // Brand filter
-            if (!string.IsNullOrEmpty(brandFilter))
-            {
-                cars = cars.Where(c => c.BrandEntity.Name == brandFilter);
-            }
-
-            // Price filter
-            if (!string.IsNullOrEmpty(priceFilter))
-            {
-                switch (priceFilter)
+                // Search functionality
+                if (!string.IsNullOrEmpty(searchString))
                 {
-                    case "low":
-                        cars = cars.Where(c => c.DailyRate <= 50);
-                        break;
-                    case "medium":
-                        cars = cars.Where(c => c.DailyRate > 50 && c.DailyRate <= 100);
-                        break;
-                    case "high":
-                        cars = cars.Where(c => c.DailyRate > 100);
-                        break;
+                    cars = cars.Where(c =>
+                        c.Brand.Contains(searchString) ||
+                        c.Model.Contains(searchString) ||
+                        c.LicensePlate.Contains(searchString) ||
+                        c.BrandEntity.Name.Contains(searchString) ||
+                        c.Features.Contains(searchString));
                 }
-            }
 
-            // Custom price range
-            if (minPrice.HasValue)
-            {
-                cars = cars.Where(c => c.DailyRate >= minPrice.Value);
-            }
-            if (maxPrice.HasValue)
-            {
-                cars = cars.Where(c => c.DailyRate <= maxPrice.Value);
-            }
-
-            // Availability filter
-            if (!string.IsNullOrEmpty(availabilityFilter))
-            {
-                switch (availabilityFilter)
+                // Brand filter
+                if (!string.IsNullOrEmpty(brandFilter))
                 {
-                    case "available":
-                        cars = cars.Where(c => c.IsAvailable);
-                        break;
-                    case "unavailable":
-                        cars = cars.Where(c => !c.IsAvailable);
-                        break;
+                    cars = cars.Where(c => c.BrandEntity.Name == brandFilter);
                 }
-            }
 
-            // Body type filter
-            if (!string.IsNullOrEmpty(bodyTypeFilter))
-            {
-                cars = cars.Where(c => c.BodyType == bodyTypeFilter);
-            }
+                // Price filter
+                if (!string.IsNullOrEmpty(priceFilter))
+                {
+                    switch (priceFilter)
+                    {
+                        case "low":
+                            cars = cars.Where(c => c.DailyRate <= 50);
+                            break;
+                        case "medium":
+                            cars = cars.Where(c => c.DailyRate > 50 && c.DailyRate <= 100);
+                            break;
+                        case "high":
+                            cars = cars.Where(c => c.DailyRate > 100);
+                            break;
+                    }
+                }
 
-            // Transmission filter
-            if (!string.IsNullOrEmpty(transmissionFilter))
-            {
-                cars = cars.Where(c => c.Transmission == transmissionFilter);
-            }
+                // Custom price range
+                if (minPrice.HasValue)
+                {
+                    cars = cars.Where(c => c.DailyRate >= minPrice.Value);
+                }
+                if (maxPrice.HasValue)
+                {
+                    cars = cars.Where(c => c.DailyRate <= maxPrice.Value);
+                }
 
-            // Fuel type filter
-            if (!string.IsNullOrEmpty(fuelTypeFilter))
-            {
-                cars = cars.Where(c => c.FuelType == fuelTypeFilter);
-            }
+                // Availability filter
+                if (!string.IsNullOrEmpty(availabilityFilter))
+                {
+                    switch (availabilityFilter)
+                    {
+                        case "available":
+                            cars = cars.Where(c => c.IsAvailable);
+                            break;
+                        case "unavailable":
+                            cars = cars.Where(c => !c.IsAvailable);
+                            break;
+                    }
+                }
 
-            // Date availability filter
-            if (pickupDate.HasValue && dropoffDate.HasValue)
-            {
-                // Get cars that are not rented during the specified period
-                var rentedCarIds = await _context.Rentals
-                    .Where(r => (r.PickupDate <= dropoffDate.Value && r.DropoffDate >= pickupDate.Value) &&
-                               (r.Status == "Active" || r.Status == "Pending"))
-                    .Select(r => r.CarId)
+                // Body type filter
+                if (!string.IsNullOrEmpty(bodyTypeFilter))
+                {
+                    cars = cars.Where(c => c.BodyType == bodyTypeFilter);
+                }
+
+                // Transmission filter
+                if (!string.IsNullOrEmpty(transmissionFilter))
+                {
+                    cars = cars.Where(c => c.Transmission == transmissionFilter);
+                }
+
+                // Fuel type filter
+                if (!string.IsNullOrEmpty(fuelTypeFilter))
+                {
+                    cars = cars.Where(c => c.FuelType == fuelTypeFilter);
+                }
+
+                // Date availability filter
+                if (pickupDate.HasValue && dropoffDate.HasValue)
+                {
+                    // Get cars that are not rented during the specified period
+                    var rentedCarIds = await _context.Rentals
+                        .Where(r => (r.PickupDate <= dropoffDate.Value && r.DropoffDate >= pickupDate.Value) &&
+                                   (r.Status == "Active" || r.Status == "Pending"))
+                        .Select(r => r.CarId)
+                        .ToListAsync();
+
+                    cars = cars.Where(c => !rentedCarIds.Contains(c.Id));
+                }
+
+                // Get total count for pagination
+                var totalCars = await cars.CountAsync();
+                var totalPages = (int)Math.Ceiling((double)totalCars / PageSize);
+
+                // Ensure page is within valid range
+                page = Math.Max(1, Math.Min(page, totalPages > 0 ? totalPages : 1));
+
+                // Apply pagination
+                var carsList = await cars
+                    .Skip((page - 1) * PageSize)
+                    .Take(PageSize)
                     .ToListAsync();
 
-                cars = cars.Where(c => !rentedCarIds.Contains(c.Id));
-            }
+                // Get filter options for dropdowns
+                var brands = await _context.Brands.Select(b => b.Name).Distinct().ToListAsync();
+                var bodyTypes = await _context.Cars.Select(c => c.BodyType).Distinct().Where(bt => !string.IsNullOrEmpty(bt)).ToListAsync();
+                var transmissionTypes = await _context.Cars.Select(c => c.Transmission).Distinct().Where(t => !string.IsNullOrEmpty(t)).ToListAsync();
+                var fuelTypes = await _context.Cars.Select(c => c.FuelType).Distinct().Where(ft => !string.IsNullOrEmpty(ft)).ToListAsync();
 
-            // Get total count for pagination
-            var totalCars = await cars.CountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalCars / PageSize);
+                // Set ViewBag values
+                ViewBag.SearchString = searchString;
+                ViewBag.BrandFilter = brandFilter;
+                ViewBag.PriceFilter = priceFilter;
+                ViewBag.AvailabilityFilter = availabilityFilter;
+                ViewBag.BodyTypeFilter = bodyTypeFilter;
+                ViewBag.TransmissionFilter = transmissionFilter;
+                ViewBag.FuelTypeFilter = fuelTypeFilter;
+                ViewBag.MinPrice = minPrice;
+                ViewBag.MaxPrice = maxPrice;
+                ViewBag.PickupDate = pickupDate;
+                ViewBag.DropoffDate = dropoffDate;
+                ViewBag.Brands = brands;
+                ViewBag.BodyTypes = bodyTypes;
+                ViewBag.TransmissionTypes = transmissionTypes;
+                ViewBag.FuelTypes = fuelTypes;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = totalPages;
+                ViewBag.TotalCars = totalCars;
+                ViewBag.PageSize = PageSize;
 
-            // Ensure page is within valid range
-            page = Math.Max(1, Math.Min(page, totalPages > 0 ? totalPages : 1));
-
-            // Apply pagination
-            var carsList = await cars
-                .Skip((page - 1) * PageSize)
-                .Take(PageSize)
-                .ToListAsync();
-
-            // Get filter options for dropdowns
-            var brands = await _context.Brands.Select(b => b.Name).Distinct().ToListAsync();
-            var bodyTypes = await _context.Cars.Select(c => c.BodyType).Distinct().Where(bt => !string.IsNullOrEmpty(bt)).ToListAsync();
-            var transmissionTypes = await _context.Cars.Select(c => c.Transmission).Distinct().Where(t => !string.IsNullOrEmpty(t)).ToListAsync();
-            var fuelTypes = await _context.Cars.Select(c => c.FuelType).Distinct().Where(ft => !string.IsNullOrEmpty(ft)).ToListAsync();
-
-            // Set ViewBag values
-            ViewBag.SearchString = searchString;
-            ViewBag.BrandFilter = brandFilter;
-            ViewBag.PriceFilter = priceFilter;
-            ViewBag.AvailabilityFilter = availabilityFilter;
-            ViewBag.BodyTypeFilter = bodyTypeFilter;
-            ViewBag.TransmissionFilter = transmissionFilter;
-            ViewBag.FuelTypeFilter = fuelTypeFilter;
-            ViewBag.MinPrice = minPrice;
-            ViewBag.MaxPrice = maxPrice;
-            ViewBag.PickupDate = pickupDate;
-            ViewBag.DropoffDate = dropoffDate;
-            ViewBag.Brands = brands;
-            ViewBag.BodyTypes = bodyTypes;
-            ViewBag.TransmissionTypes = transmissionTypes;
-            ViewBag.FuelTypes = fuelTypes;
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalCars = totalCars;
-            ViewBag.PageSize = PageSize;
-
-            var result = View(carsList);
-            
-            // Cache the result for 5 minutes
-            _cacheService.Set(cacheKey, result, TimeSpan.FromMinutes(5));
-            
-            return result;
-        });
+                return View(carsList);
+            });
+        }
 
         // GET: Cars/Details/5
         public async Task<IActionResult> Details(int? id)
