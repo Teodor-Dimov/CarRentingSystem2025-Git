@@ -127,7 +127,7 @@
                                     <h6 class="mb-1">@car.DisplayName</h6>
                                     <p class="mb-1 text-muted">@car.Year - @car.LicensePlate</p>
                                     <small class="text-muted">
-                                        Daily Rate: $@car.DailyRate.ToString("N2") | 
+                                        Daily Rate: €@car.DailyRate.ToString("N2") | 
                                         Status: <span class="badge @(car.IsAvailable ? "bg-success" : "bg-danger")">
                                             @(car.IsAvailable ? "Available" : "Rented")
                                         </span>

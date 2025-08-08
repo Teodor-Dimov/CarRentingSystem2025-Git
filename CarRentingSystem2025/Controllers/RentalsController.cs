@@ -120,7 +120,7 @@ namespace CarRentingSystem2025.Controllers
                 }
             }
 
-            ViewData["CarId"] = new SelectList(availableCars.Select(c => new { c.Id, DisplayName = $"{c.DisplayName} - ${c.DailyRate:F2}/day" }), "Id", "DisplayName", carId);
+            ViewData["CarId"] = new SelectList(availableCars.Select(c => new { c.Id, DisplayName = $"{c.DisplayName} - €{c.DailyRate:F2}/day" }), "Id", "DisplayName", carId);
             ViewBag.CustomerId = customer.Id; // Set the current user's customer ID
 
             // Pre-populate with selected car
@@ -218,21 +218,21 @@ namespace CarRentingSystem2025.Controllers
                 if (ModelState.IsValid)
                 {
                     Console.WriteLine("ModelState is valid, proceeding with rental creation");
-                    // Get the car to calculate total amount
-                    var car = await _context.Cars.FindAsync(rental.CarId);
-                    if (car != null)
-                    {
-                        // Calculate total amount based on rental duration
-                        var rentalDuration = (rental.DropoffDate - rental.PickupDate).Days;
-                        rental.TotalAmount = car.DailyRate * rentalDuration;
-                        Console.WriteLine($"Calculated TotalAmount: {rental.TotalAmount}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Car not found, cannot calculate total amount");
-                        ModelState.AddModelError("CarId", "Selected car not found");
-                        return View(rental);
-                    }
+                                                              // Get the car to calculate total amount
+                     var car = await _context.Cars.FindAsync(rental.CarId);
+                     if (car != null)
+                     {
+                         // Calculate total amount based on rental duration
+                         var rentalDuration = (rental.DropoffDate - rental.PickupDate).Days;
+                         rental.TotalAmount = car.DailyRate * rentalDuration;
+                         Console.WriteLine($"Calculated TotalAmount: {rental.TotalAmount}");
+                     }
+                     else
+                     {
+                         Console.WriteLine("Car not found, cannot calculate total amount");
+                         ModelState.AddModelError("CarId", "Selected car not found");
+                         return View(rental);
+                     }
 
                     // Set default values
                     rental.Status = "Active";
@@ -279,7 +279,7 @@ namespace CarRentingSystem2025.Controllers
                         .Include(c => c.BrandEntity)
                         .ToList();
 
-                    ViewData["CarId"] = new SelectList(carsForDropdown.Select(c => new { c.Id, DisplayName = $"{c.DisplayName} - ${c.DailyRate:F2}/day" }), "Id", "DisplayName", rental != null ? rental.CarId : (int?)null);
+                    ViewData["CarId"] = new SelectList(carsForDropdown.Select(c => new { c.Id, DisplayName = $"{c.DisplayName} - €{c.DailyRate:F2}/day" }), "Id", "DisplayName", rental != null ? rental.CarId : (int?)null);
                     ViewBag.CustomerId = customer?.Id ?? 0;
 
                     return View(rental);
@@ -298,7 +298,7 @@ namespace CarRentingSystem2025.Controllers
                 .Include(c => c.BrandEntity)
                 .ToList();
 
-            ViewData["CarId"] = new SelectList(carsForException.Select(c => new { c.Id, DisplayName = $"{c.DisplayName} - ${c.DailyRate:F2}/day" }), "Id", "DisplayName", rental != null ? rental.CarId : (int?)null);
+            ViewData["CarId"] = new SelectList(carsForException.Select(c => new { c.Id, DisplayName = $"{c.DisplayName} - €{c.DailyRate:F2}/day" }), "Id", "DisplayName", rental != null ? rental.CarId : (int?)null);
             ViewBag.CustomerId = customer?.Id ?? 0;
 
             return View(rental);

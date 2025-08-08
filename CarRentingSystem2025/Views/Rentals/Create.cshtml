@@ -20,7 +20,7 @@
                             <p class="mb-0">
                                 <strong>@ViewBag.SelectedCar.Brand @ViewBag.SelectedCar.Model</strong> - 
                                 @ViewBag.SelectedCar.BrandEntity?.Name | 
-                                Daily Rate: <strong>$@ViewBag.SelectedCar.DailyRate.ToString("F2")</strong>
+                                Daily Rate: <strong>€@ViewBag.SelectedCar.DailyRate.ToString("F2")</strong>
                             </p>
                         </div>
                     }
@@ -124,7 +124,7 @@
                     const selectedOption = carSelect.options[carSelect.selectedIndex];
                     console.log('Selected option text:', selectedOption.text);
                     
-                    const dailyRateText = selectedOption.text.match(/\$(\d+(?:\.\d{2})?)/);
+                    const dailyRateText = selectedOption.text.match(/€(\d+(?:\.\d{2})?)/);
                     if (dailyRateText) {
                         const dailyRate = parseFloat(dailyRateText[1]);
                         const total = dailyRate * days;

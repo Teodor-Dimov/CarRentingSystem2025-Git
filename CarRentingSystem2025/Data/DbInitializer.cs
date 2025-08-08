@@ -1,4 +1,5 @@
 using CarRentingSystem2025.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRentingSystem2025.Data
@@ -7,7 +8,7 @@ namespace CarRentingSystem2025.Data
     {
         public static async Task Initialize(ApplicationDbContext context)
         {
-            // Ensure database is created with all tables
+            // Ensure database is created
             await context.Database.EnsureCreatedAsync();
 
             // Seed Brands
@@ -15,133 +16,101 @@ namespace CarRentingSystem2025.Data
             {
                 var brands = new List<Brand>
                 {
-                    new Brand 
-                    { 
-                        Name = "Toyota", 
-                        Description = "Japanese automotive manufacturer known for reliability and fuel efficiency", 
-                        Country = "Japan",
-                        Headquarters = "Toyota City, Aichi, Japan",
-                        FoundedDate = new DateTime(1937, 8, 28),
-                        Website = "https://www.toyota.com",
-                        PhoneNumber = "+81-565-28-2121",
-                        Email = "info@toyota.com",
-                        Slogan = "Let's Go Places",
-                        CEO = "Koji Sato",
-                        Status = "Active",
-                        AverageRating = 4.5m,
-                        IsFeatured = true
-                    },
-                    new Brand 
-                    { 
-                        Name = "Honda", 
-                        Description = "Japanese multinational corporation known for motorcycles and automobiles", 
-                        Country = "Japan",
-                        Headquarters = "Minato, Tokyo, Japan",
-                        FoundedDate = new DateTime(1948, 9, 24),
-                        Website = "https://www.honda.com",
-                        PhoneNumber = "+81-3-3423-1111",
-                        Email = "info@honda.com",
-                        Slogan = "The Power of Dreams",
-                        CEO = "Toshihiro Mibe",
-                        Status = "Active",
-                        AverageRating = 4.3m,
-                        IsFeatured = true
-                    },
-                    new Brand 
-                    { 
-                        Name = "BMW", 
-                        Description = "German luxury vehicle manufacturer known for performance and innovation", 
+                    new Brand
+                    {
+                        Name = "BMW",
                         Country = "Germany",
-                        Headquarters = "Munich, Bavaria, Germany",
                         FoundedDate = new DateTime(1916, 3, 7),
+                        Headquarters = "Munich, Germany",
                         Website = "https://www.bmw.com",
-                        PhoneNumber = "+49-89-382-0",
-                        Email = "info@bmw.com",
-                        Slogan = "The Ultimate Driving Machine",
-                        CEO = "Oliver Zipse",
-                        Status = "Active",
-                        AverageRating = 4.7m,
-                        IsFeatured = true
+                        Description = "Luxury German automaker known for sporty driving dynamics",
+                        LogoUrl = "/images/brands/bmw-logo.png",
+                        IsFeatured = true,
+                        AverageRating = 4.5m
                     },
-                    new Brand 
-                    { 
-                        Name = "Mercedes-Benz", 
-                        Description = "German automotive manufacturer known for luxury and innovation", 
+                    new Brand
+                    {
+                        Name = "Mercedes-Benz",
                         Country = "Germany",
-                        Headquarters = "Stuttgart, Baden-Württemberg, Germany",
                         FoundedDate = new DateTime(1926, 6, 28),
+                        Headquarters = "Stuttgart, Germany",
                         Website = "https://www.mercedes-benz.com",
-                        PhoneNumber = "+49-711-17-0",
-                        Email = "info@mercedes-benz.com",
-                        Slogan = "The Best or Nothing",
-                        CEO = "Ola Källenius",
-                        Status = "Active",
-                        AverageRating = 4.8m,
-                        IsFeatured = true
+                        Description = "Premium German luxury vehicle manufacturer",
+                        LogoUrl = "/images/brands/mercedes-logo.png",
+                        IsFeatured = true,
+                        AverageRating = 4.6m
                     },
-                    new Brand 
-                    { 
-                        Name = "Ford", 
-                        Description = "American multinational automaker with a rich history", 
-                        Country = "USA",
-                        Headquarters = "Dearborn, Michigan, USA",
-                        FoundedDate = new DateTime(1903, 6, 16),
-                        Website = "https://www.ford.com",
-                        PhoneNumber = "+1-800-392-3673",
-                        Email = "info@ford.com",
-                        Slogan = "Built Ford Tough",
-                        CEO = "Jim Farley",
-                        Status = "Active",
-                        AverageRating = 4.2m,
-                        IsFeatured = true
-                    },
-                    new Brand 
-                    { 
-                        Name = "Chevrolet", 
-                        Description = "American automobile division of General Motors", 
-                        Country = "USA",
-                        Headquarters = "Detroit, Michigan, USA",
-                        FoundedDate = new DateTime(1911, 11, 3),
-                        Website = "https://www.chevrolet.com",
-                        PhoneNumber = "+1-800-222-1020",
-                        Email = "info@chevrolet.com",
-                        Slogan = "Find New Roads",
-                        CEO = "Mary Barra",
-                        Status = "Active",
-                        AverageRating = 4.1m,
-                        IsFeatured = false
-                    },
-                    new Brand 
-                    { 
-                        Name = "Volkswagen", 
-                        Description = "German multinational automotive manufacturer", 
+                    new Brand
+                    {
+                        Name = "Volkswagen",
                         Country = "Germany",
-                        Headquarters = "Wolfsburg, Lower Saxony, Germany",
                         FoundedDate = new DateTime(1937, 5, 28),
+                        Headquarters = "Wolfsburg, Germany",
                         Website = "https://www.volkswagen.com",
-                        PhoneNumber = "+49-5361-9-0",
-                        Email = "info@volkswagen.com",
-                        Slogan = "Das Auto",
-                        CEO = "Oliver Blume",
-                        Status = "Active",
-                        AverageRating = 4.4m,
-                        IsFeatured = false
+                        Description = "German multinational automotive manufacturer",
+                        LogoUrl = "/images/brands/vw-logo.png",
+                        IsFeatured = true,
+                        AverageRating = 4.3m
                     },
-                    new Brand 
-                    { 
-                        Name = "Audi", 
-                        Description = "German automobile manufacturer known for luxury and technology", 
+                    new Brand
+                    {
+                        Name = "Audi",
                         Country = "Germany",
-                        Headquarters = "Ingolstadt, Bavaria, Germany",
                         FoundedDate = new DateTime(1909, 7, 16),
+                        Headquarters = "Ingolstadt, Germany",
                         Website = "https://www.audi.com",
-                        PhoneNumber = "+49-841-89-0",
-                        Email = "info@audi.com",
-                        Slogan = "Vorsprung durch Technik",
-                        CEO = "Gernot Döllner",
-                        Status = "Active",
-                        AverageRating = 4.6m,
-                        IsFeatured = true
+                        Description = "German luxury vehicle manufacturer",
+                        LogoUrl = "/images/brands/audi-logo.png",
+                        IsFeatured = true,
+                        AverageRating = 4.4m
+                    },
+                    new Brand
+                    {
+                        Name = "Volvo",
+                        Country = "Sweden",
+                        FoundedDate = new DateTime(1927, 4, 14),
+                        Headquarters = "Gothenburg, Sweden",
+                        Website = "https://www.volvocars.com",
+                        Description = "Swedish luxury vehicle manufacturer known for safety",
+                        LogoUrl = "/images/brands/volvo-logo.png",
+                        IsFeatured = false,
+                        AverageRating = 4.2m
+                    },
+                    new Brand
+                    {
+                        Name = "Peugeot",
+                        Country = "France",
+                        FoundedDate = new DateTime(1810, 9, 26),
+                        Headquarters = "Paris, France",
+                        Website = "https://www.peugeot.com",
+                        Description = "French automotive manufacturer",
+                        LogoUrl = "/images/brands/peugeot-logo.png",
+                        IsFeatured = false,
+                        AverageRating = 4.0m
+                    },
+                    new Brand
+                    {
+                        Name = "Renault",
+                        Country = "France",
+                        FoundedDate = new DateTime(1899, 2, 25),
+                        Headquarters = "Boulogne-Billancourt, France",
+                        Website = "https://www.renault.com",
+                        Description = "French multinational automobile manufacturer",
+                        LogoUrl = "/images/brands/renault-logo.png",
+                        IsFeatured = false,
+                        AverageRating = 4.1m
+                    },
+                    new Brand
+                    {
+                        Name = "Fiat",
+                        Country = "Italy",
+                        FoundedDate = new DateTime(1899, 7, 11),
+                        Headquarters = "Turin, Italy",
+                        Website = "https://www.fiat.com",
+                        Description = "Italian automobile manufacturer",
+                        LogoUrl = "/images/brands/fiat-logo.png",
+                        IsFeatured = false,
+                        AverageRating = 3.9m
                     }
                 };
 
@@ -153,96 +122,17 @@ namespace CarRentingSystem2025.Data
             if (!context.Cars.Any())
             {
                 var brands = await context.Brands.ToListAsync();
-                
                 var cars = new List<Car>
                 {
                     new Car
                     {
-                        BrandId = brands.First(b => b.Name == "Toyota").Id,
-                        Brand = "Toyota",
-                        Model = "Camry",
-                        Year = 2023,
-                        LicensePlate = "ABC-123",
-                        DailyRate = 75.00m,
-                        Color = "White",
-                        FuelType = "Gasoline",
-                        Transmission = "Automatic",
-                        Seats = 5,
-                        Mileage = 15000,
-                        EngineSize = "2.5L",
-                        BodyType = "Sedan",
-                        DriveType = "FWD",
-                        ReleaseDate = new DateTime(2023, 1, 15),
-                        LastServiceDate = DateTime.Now.AddDays(-30),
-                        NextServiceDate = DateTime.Now.AddDays(60),
-                        Features = "GPS Navigation, Bluetooth, Backup Camera, Apple CarPlay, Android Auto, Lane Departure Warning, Adaptive Cruise Control",
-                        Description = "Comfortable sedan with excellent fuel economy and advanced safety features",
-                        IsAvailable = true,
-                        IsFeatured = true,
-                        Rating = 4.5m,
-                        NumberOfRentals = 12
-                    },
-                    new Car
-                    {
-                        BrandId = brands.First(b => b.Name == "Honda").Id,
-                        Brand = "Honda",
-                        Model = "Civic",
-                        Year = 2022,
-                        LicensePlate = "DEF-456",
-                        DailyRate = 65.00m,
-                        Color = "Blue",
-                        FuelType = "Gasoline",
-                        Transmission = "Automatic",
-                        Seats = 5,
-                        Mileage = 22000,
-                        EngineSize = "2.0L",
-                        BodyType = "Sedan",
-                        DriveType = "FWD",
-                        ReleaseDate = new DateTime(2022, 3, 10),
-                        LastServiceDate = DateTime.Now.AddDays(-45),
-                        NextServiceDate = DateTime.Now.AddDays(45),
-                        Features = "Honda Sensing, Bluetooth, Backup Camera, Apple CarPlay, Android Auto, Blind Spot Monitoring",
-                        Description = "Reliable compact car perfect for city driving with excellent safety ratings",
-                        IsAvailable = true,
-                        IsFeatured = false,
-                        Rating = 4.3m,
-                        NumberOfRentals = 8
-                    },
-                    new Car
-                    {
                         BrandId = brands.First(b => b.Name == "BMW").Id,
                         Brand = "BMW",
-                        Model = "X5",
+                        Model = "3 Series",
                         Year = 2023,
-                        LicensePlate = "GHI-789",
-                        DailyRate = 120.00m,
-                        Color = "Black",
-                        FuelType = "Gasoline",
-                        Transmission = "Automatic",
-                        Seats = 7,
-                        Mileage = 8500,
-                        EngineSize = "3.0L Twin-Turbo",
-                        BodyType = "SUV",
-                        DriveType = "AWD",
-                        ReleaseDate = new DateTime(2023, 2, 20),
-                        LastServiceDate = DateTime.Now.AddDays(-15),
-                        NextServiceDate = DateTime.Now.AddDays(75),
-                        Features = "BMW iDrive, Navigation, Harman Kardon Sound, Panoramic Sunroof, Heated Seats, Adaptive Suspension, Parking Assistant",
-                        Description = "Luxury SUV with premium features and exceptional performance",
-                        IsAvailable = true,
-                        IsFeatured = true,
-                        Rating = 4.7m,
-                        NumberOfRentals = 5
-                    },
-                    new Car
-                    {
-                        BrandId = brands.First(b => b.Name == "Mercedes-Benz").Id,
-                        Brand = "Mercedes-Benz",
-                        Model = "C-Class",
-                        Year = 2023,
-                        LicensePlate = "JKL-012",
-                        DailyRate = 110.00m,
-                        Color = "Silver",
+                        LicensePlate = "BMW-001",
+                        DailyRate = 85.00m,
+                        Color = "Alpine White",
                         FuelType = "Gasoline",
                         Transmission = "Automatic",
                         Seats = 5,
@@ -250,6 +140,32 @@ namespace CarRentingSystem2025.Data
                         EngineSize = "2.0L Turbo",
                         BodyType = "Sedan",
                         DriveType = "RWD",
+                        ReleaseDate = new DateTime(2023, 1, 15),
+                        LastServiceDate = DateTime.Now.AddDays(-30),
+                        NextServiceDate = DateTime.Now.AddDays(60),
+                        Features = "BMW Live Cockpit Professional, Harman Kardon Sound, Driving Assistant Professional, Parking Assistant Plus",
+                        Description = "Premium compact luxury sedan with excellent driving dynamics",
+                        IsAvailable = true,
+                        IsFeatured = true,
+                        Rating = 4.7m,
+                        NumberOfRentals = 12
+                    },
+                    new Car
+                    {
+                        BrandId = brands.First(b => b.Name == "Mercedes-Benz").Id,
+                        Brand = "Mercedes-Benz",
+                        Model = "A-Class",
+                        Year = 2023,
+                        LicensePlate = "MB-002",
+                        DailyRate = 75.00m,
+                        Color = "Obsidian Black",
+                        FuelType = "Gasoline",
+                        Transmission = "Automatic",
+                        Seats = 5,
+                        Mileage = 8500,
+                        EngineSize = "1.3L Turbo",
+                        BodyType = "Hatchback",
+                        DriveType = "FWD",
                         ReleaseDate = new DateTime(2023, 1, 8),
                         LastServiceDate = DateTime.Now.AddDays(-20),
                         NextServiceDate = DateTime.Now.AddDays(70),
@@ -262,65 +178,13 @@ namespace CarRentingSystem2025.Data
                     },
                     new Car
                     {
-                        BrandId = brands.First(b => b.Name == "Ford").Id,
-                        Brand = "Ford",
-                        Model = "Mustang",
-                        Year = 2023,
-                        LicensePlate = "MNO-345",
-                        DailyRate = 95.00m,
-                        Color = "Red",
-                        FuelType = "Gasoline",
-                        Transmission = "Manual",
-                        Seats = 4,
-                        Mileage = 8000,
-                        EngineSize = "5.0L V8",
-                        BodyType = "Coupe",
-                        DriveType = "RWD",
-                        ReleaseDate = new DateTime(2023, 3, 5),
-                        LastServiceDate = DateTime.Now.AddDays(-10),
-                        NextServiceDate = DateTime.Now.AddDays(80),
-                        Features = "SYNC 4, Bang & Olufsen Sound, Track Apps, Launch Control, Line Lock, Selectable Drive Modes",
-                        Description = "Iconic American muscle car with powerful V8 engine and classic styling",
-                        IsAvailable = true,
-                        IsFeatured = true,
-                        Rating = 4.6m,
-                        NumberOfRentals = 15
-                    },
-                    new Car
-                    {
-                        BrandId = brands.First(b => b.Name == "Chevrolet").Id,
-                        Brand = "Chevrolet",
-                        Model = "Malibu",
-                        Year = 2022,
-                        LicensePlate = "PQR-678",
-                        DailyRate = 70.00m,
-                        Color = "Gray",
-                        FuelType = "Gasoline",
-                        Transmission = "Automatic",
-                        Seats = 5,
-                        Mileage = 18000,
-                        EngineSize = "1.5L Turbo",
-                        BodyType = "Sedan",
-                        DriveType = "FWD",
-                        ReleaseDate = new DateTime(2022, 4, 12),
-                        LastServiceDate = DateTime.Now.AddDays(-35),
-                        NextServiceDate = DateTime.Now.AddDays(55),
-                        Features = "Chevrolet Infotainment 3, Teen Driver Technology, OnStar, Forward Collision Alert, Lane Keep Assist",
-                        Description = "Comfortable mid-size sedan with modern technology and good fuel economy",
-                        IsAvailable = true,
-                        IsFeatured = false,
-                        Rating = 4.1m,
-                        NumberOfRentals = 6
-                    },
-                    new Car
-                    {
                         BrandId = brands.First(b => b.Name == "Volkswagen").Id,
                         Brand = "Volkswagen",
                         Model = "Golf",
                         Year = 2023,
-                        LicensePlate = "STU-901",
-                        DailyRate = 60.00m,
-                        Color = "White",
+                        LicensePlate = "VW-003",
+                        DailyRate = 55.00m,
+                        Color = "Pure White",
                         FuelType = "Gasoline",
                         Transmission = "Automatic",
                         Seats = 5,
@@ -344,9 +208,9 @@ namespace CarRentingSystem2025.Data
                         Brand = "Audi",
                         Model = "A4",
                         Year = 2023,
-                        LicensePlate = "VWX-234",
-                        DailyRate = 100.00m,
-                        Color = "Black",
+                        LicensePlate = "AUDI-004",
+                        DailyRate = 65.00m,
+                        Color = "Glacier White",
                         FuelType = "Gasoline",
                         Transmission = "Automatic",
                         Seats = 5,
@@ -363,6 +227,110 @@ namespace CarRentingSystem2025.Data
                         IsFeatured = true,
                         Rating = 4.6m,
                         NumberOfRentals = 11
+                    },
+                    new Car
+                    {
+                        BrandId = brands.First(b => b.Name == "Volvo").Id,
+                        Brand = "Volvo",
+                        Model = "XC40",
+                        Year = 2023,
+                        LicensePlate = "VOLVO-005",
+                        DailyRate = 70.00m,
+                        Color = "Crystal White",
+                        FuelType = "Gasoline",
+                        Transmission = "Automatic",
+                        Seats = 5,
+                        Mileage = 7800,
+                        EngineSize = "2.0L Turbo",
+                        BodyType = "SUV",
+                        DriveType = "AWD",
+                        ReleaseDate = new DateTime(2023, 3, 10),
+                        LastServiceDate = DateTime.Now.AddDays(-15),
+                        NextServiceDate = DateTime.Now.AddDays(75),
+                        Features = "Sensus Connect, Harman Kardon Sound, Pilot Assist, City Safety, 360° Camera",
+                        Description = "Compact luxury SUV with advanced safety features and Scandinavian design",
+                        IsAvailable = true,
+                        IsFeatured = false,
+                        Rating = 4.5m,
+                        NumberOfRentals = 8
+                    },
+                    new Car
+                    {
+                        BrandId = brands.First(b => b.Name == "Peugeot").Id,
+                        Brand = "Peugeot",
+                        Model = "208",
+                        Year = 2023,
+                        LicensePlate = "PEUGEOT-006",
+                        DailyRate = 45.00m,
+                        Color = "Fusion Orange",
+                        FuelType = "Gasoline",
+                        Transmission = "Automatic",
+                        Seats = 5,
+                        Mileage = 6500,
+                        EngineSize = "1.2L Turbo",
+                        BodyType = "Hatchback",
+                        DriveType = "FWD",
+                        ReleaseDate = new DateTime(2023, 2, 20),
+                        LastServiceDate = DateTime.Now.AddDays(-12),
+                        NextServiceDate = DateTime.Now.AddDays(78),
+                        Features = "Peugeot i-Cockpit, Focal Sound, Advanced Grip Control, Driver Attention Alert, Lane Keeping Assist",
+                        Description = "Stylish compact hatchback with innovative interior design",
+                        IsAvailable = true,
+                        IsFeatured = false,
+                        Rating = 4.2m,
+                        NumberOfRentals = 5
+                    },
+                    new Car
+                    {
+                        BrandId = brands.First(b => b.Name == "Renault").Id,
+                        Brand = "Renault",
+                        Model = "Clio",
+                        Year = 2023,
+                        LicensePlate = "RENAULT-007",
+                        DailyRate = 40.00m,
+                        Color = "Arctic White",
+                        FuelType = "Gasoline",
+                        Transmission = "Automatic",
+                        Seats = 5,
+                        Mileage = 7200,
+                        EngineSize = "1.0L Turbo",
+                        BodyType = "Hatchback",
+                        DriveType = "FWD",
+                        ReleaseDate = new DateTime(2023, 1, 30),
+                        LastServiceDate = DateTime.Now.AddDays(-8),
+                        NextServiceDate = DateTime.Now.AddDays(82),
+                        Features = "Renault EASY LINK, Bose Sound, Multi-Sense, Advanced Emergency Braking, Lane Departure Warning",
+                        Description = "Compact city car with excellent fuel efficiency and modern technology",
+                        IsAvailable = true,
+                        IsFeatured = false,
+                        Rating = 4.0m,
+                        NumberOfRentals = 4
+                    },
+                    new Car
+                    {
+                        BrandId = brands.First(b => b.Name == "Fiat").Id,
+                        Brand = "Fiat",
+                        Model = "500",
+                        Year = 2023,
+                        LicensePlate = "FIAT-008",
+                        DailyRate = 35.00m,
+                        Color = "Bianco",
+                        FuelType = "Gasoline",
+                        Transmission = "Automatic",
+                        Seats = 4,
+                        Mileage = 5800,
+                        EngineSize = "1.0L Turbo",
+                        BodyType = "Hatchback",
+                        DriveType = "FWD",
+                        ReleaseDate = new DateTime(2023, 2, 5),
+                        LastServiceDate = DateTime.Now.AddDays(-5),
+                        NextServiceDate = DateTime.Now.AddDays(85),
+                        Features = "Uconnect LIVE, Beats Audio, Advanced Driver Assistance Systems, 7\" HD Touchscreen",
+                        Description = "Iconic Italian city car with retro styling and modern features",
+                        IsAvailable = true,
+                        IsFeatured = false,
+                        Rating = 4.1m,
+                        NumberOfRentals = 6
                     }
                 };
 
