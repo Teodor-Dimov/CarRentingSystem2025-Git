@@ -1,5 +1,6 @@
 using CarRentingSystem2025.Data;
 using CarRentingSystem2025.Models;
+using CarRentingSystem2025.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -9,11 +10,15 @@ namespace CarRentingSystem2025.Controllers
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICacheService _cacheService;
+        private readonly IPerformanceService _performanceService;
         private const int PageSize = 6; // Number of cars per page
 
-        public CarsController(ApplicationDbContext context)
+        public CarsController(ApplicationDbContext context, ICacheService cacheService, IPerformanceService performanceService)
         {
             _context = context;
+            _cacheService = cacheService;
+            _performanceService = performanceService;
         }
 
         // GET: Cars
@@ -21,7 +26,17 @@ namespace CarRentingSystem2025.Controllers
             string availabilityFilter, string bodyTypeFilter, string transmissionFilter, string fuelTypeFilter, 
             decimal? minPrice, decimal? maxPrice, DateTime? pickupDate, DateTime? dropoffDate, int page = 1)
         {
-            var cars = _context.Cars.Include(c => c.BrandEntity).AsQueryable();
+            return await _performanceService.MeasureAsync("CarsIndex", async () =>
+            {
+                var cacheKey = $"cars_index_{searchString}_{brandFilter}_{priceFilter}_{availabilityFilter}_{bodyTypeFilter}_{transmissionFilter}_{fuelTypeFilter}_{minPrice}_{maxPrice}_{page}";
+                
+                // Try to get from cache first
+                if (_cacheService.TryGetValue(cacheKey, out var cachedResult))
+                {
+                    return cachedResult as IActionResult;
+                }
+
+                var cars = _context.Cars.Include(c => c.BrandEntity).AsQueryable();
 
             // Search functionality
             if (!string.IsNullOrEmpty(searchString))
@@ -152,8 +167,13 @@ namespace CarRentingSystem2025.Controllers
             ViewBag.TotalCars = totalCars;
             ViewBag.PageSize = PageSize;
 
-            return View(carsList);
-        }
+            var result = View(carsList);
+            
+            // Cache the result for 5 minutes
+            _cacheService.Set(cacheKey, result, TimeSpan.FromMinutes(5));
+            
+            return result;
+        });
 
         // GET: Cars/Details/5
         public async Task<IActionResult> Details(int? id)

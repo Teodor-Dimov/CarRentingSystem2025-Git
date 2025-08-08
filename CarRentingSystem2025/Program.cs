@@ -2,6 +2,7 @@ using CarRentingSystem2025.Data;
 using CarRentingSystem2025.Models;
 using CarRentingSystem2025.Middleware;
 using CarRentingSystem2025.Services;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,6 +45,11 @@ builder.Services.AddControllersWithViews();
 
 // Register validation service
 builder.Services.AddScoped<IValidationService, ValidationService>();
+
+// Register performance and cache services
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IPerformanceService, PerformanceService>();
 
 var app = builder.Build();
 
