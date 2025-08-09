@@ -11,6 +11,14 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
     <div class="row">
         <!-- Profile Information -->
@@ -31,7 +39,7 @@
                     <div class="row">
                         <div class="col-6">
                             <small class="text-muted">Phone</small>
-                            <p class="mb-2">@Model.PhoneNumber</p>
+                            <p class="mb-2">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</p>
                         </div>
                         <div class="col-6">
                             <small class="text-muted">Member Since</small>
@@ -43,7 +51,7 @@
                         <div class="col-6">
                             <small class="text-muted">Membership Level</small>
                             <p class="mb-2">
-                                <span class="badge bg-primary">@Model.MembershipLevel</span>
+                                <span class="badge bg-primary">@(string.IsNullOrEmpty(Model.MembershipLevel) ? "Standard" : Model.MembershipLevel)</span>
                             </p>
                         </div>
                         <div class="col-6">
