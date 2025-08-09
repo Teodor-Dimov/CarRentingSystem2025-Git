@@ -31,11 +31,15 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Rentals/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            Console.WriteLine($"===== ADMIN RENTALS DETAILS ACTION CALLED =====");
             Console.WriteLine($"Admin Rentals Details action called with id: {id}");
+            Console.WriteLine($"Area: {ControllerContext.ActionDescriptor.RouteValues["area"]}");
+            Console.WriteLine($"Controller: {ControllerContext.ActionDescriptor.RouteValues["controller"]}");
+            Console.WriteLine($"Action: {ControllerContext.ActionDescriptor.RouteValues["action"]}");
             
             if (id == null)
             {
-                Console.WriteLine("Admin Rentals Details: id is null");
+                Console.WriteLine("Admin Rentals Details: id is null - returning NotFound");
                 return NotFound();
             }
 
@@ -47,22 +51,28 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             if (rental == null)
             {
-                Console.WriteLine($"Admin Rentals Details: rental with id {id} not found");
+                Console.WriteLine($"Admin Rentals Details: rental with id {id} not found - returning NotFound");
                 return NotFound();
             }
 
             Console.WriteLine($"Admin Rentals Details: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
+            Console.WriteLine($"Rental details: {rental.Car?.Brand} {rental.Car?.Model} from {rental.PickupDate:yyyy-MM-dd} to {rental.DropoffDate:yyyy-MM-dd}");
+            Console.WriteLine("Admin Rentals Details: returning Details view");
             return View(rental);
         }
 
         // GET: Admin/Rentals/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            Console.WriteLine($"===== ADMIN RENTALS EDIT ACTION CALLED =====");
             Console.WriteLine($"Admin Rentals Edit action called with id: {id}");
+            Console.WriteLine($"Area: {ControllerContext.ActionDescriptor.RouteValues["area"]}");
+            Console.WriteLine($"Controller: {ControllerContext.ActionDescriptor.RouteValues["controller"]}");
+            Console.WriteLine($"Action: {ControllerContext.ActionDescriptor.RouteValues["action"]}");
             
             if (id == null)
             {
-                Console.WriteLine("Admin Rentals Edit: id is null");
+                Console.WriteLine("Admin Rentals Edit: id is null - returning NotFound");
                 return NotFound();
             }
 
@@ -73,15 +83,22 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             if (rental == null)
             {
-                Console.WriteLine($"Admin Rentals Edit: rental with id {id} not found");
+                Console.WriteLine($"Admin Rentals Edit: rental with id {id} not found - returning NotFound");
                 return NotFound();
             }
 
             Console.WriteLine($"Admin Rentals Edit: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
-            ViewBag.Cars = await _context.Cars.ToListAsync();
-            ViewBag.Customers = await _context.Customers.ToListAsync();
+            Console.WriteLine($"Rental details: {rental.Car?.Brand} {rental.Car?.Model} from {rental.PickupDate:yyyy-MM-dd} to {rental.DropoffDate:yyyy-MM-dd}");
+            
+            var cars = await _context.Cars.ToListAsync();
+            var customers = await _context.Customers.ToListAsync();
+            Console.WriteLine($"Loaded {cars.Count} cars and {customers.Count} customers for dropdown");
+            
+            ViewBag.Cars = cars;
+            ViewBag.Customers = customers;
             ViewBag.StatusOptions = new[] { "Active", "Completed", "Cancelled", "Overdue" };
 
+            Console.WriteLine("Admin Rentals Edit: returning Edit view");
             return View(rental);
         }
 
@@ -127,8 +144,12 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Rentals/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            Console.WriteLine($"===== ADMIN RENTALS DELETE ACTION CALLED =====");
+            Console.WriteLine($"Admin Rentals Delete action called with id: {id}");
+            
             if (id == null)
             {
+                Console.WriteLine("Admin Rentals Delete: id is null - returning NotFound");
                 return NotFound();
             }
 
@@ -140,9 +161,12 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             if (rental == null)
             {
+                Console.WriteLine($"Admin Rentals Delete: rental with id {id} not found - returning NotFound");
                 return NotFound();
             }
 
+            Console.WriteLine($"Admin Rentals Delete: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
+            Console.WriteLine("Admin Rentals Delete: returning Delete confirmation view");
             return View(rental);
         }
 

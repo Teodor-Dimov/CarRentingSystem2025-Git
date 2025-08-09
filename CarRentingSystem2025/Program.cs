@@ -90,6 +90,9 @@ using (var scope = app.Services.CreateScope())
             }
         }
 
+        // Initialize database with seed data
+        await DbInitializer.Initialize(context);
+        
         // Create test users
         var testUsers = new[]
         {

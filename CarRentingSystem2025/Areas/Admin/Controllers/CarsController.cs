@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace CarRentingSystem2025.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize] // Temporarily removed Roles = "Administrator" for testing
+    [Authorize(Roles = "Administrator")]
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -33,7 +33,19 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Cars/Create
         public async Task<IActionResult> Create()
         {
-            ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name");
+            Console.WriteLine("===== ADMIN CARS CREATE ACTION CALLED =====");
+            
+            var brands = await _context.Brands.ToListAsync();
+            Console.WriteLine($"Found {brands.Count} brands in database");
+            
+            foreach (var brand in brands)
+            {
+                Console.WriteLine($"Brand: {brand.Name} (ID: {brand.Id})");
+            }
+            
+            ViewBag.BrandId = new SelectList(brands, "Id", "Name");
+            Console.WriteLine("ViewBag.BrandId set successfully");
+            
             return View();
         }
 
@@ -50,7 +62,10 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 TempData["SuccessMessage"] = "Car created successfully!";
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name", car.BrandId);
+            
+            var brands = await _context.Brands.ToListAsync();
+            Console.WriteLine($"POST Create: Repopulating {brands.Count} brands due to validation error");
+            ViewBag.BrandId = new SelectList(brands, "Id", "Name", car.BrandId);
             return View(car);
         }
 
@@ -186,8 +201,12 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Cars/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            Console.WriteLine($"===== ADMIN CARS DETAILS ACTION CALLED =====");
+            Console.WriteLine($"Details action called with id: {id}");
+            
             if (id == null)
             {
+                Console.WriteLine("Details action: id is null - returning NotFound");
                 return NotFound();
             }
 
@@ -198,9 +217,12 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (car == null)
             {
+                Console.WriteLine($"Details action: car with id {id} not found - returning NotFound");
                 return NotFound();
             }
 
+            Console.WriteLine($"Details action: found car {car.Brand} {car.Model} (ID: {car.Id})");
+            Console.WriteLine("Details action: returning Details view");
             return View(car);
         }
 
