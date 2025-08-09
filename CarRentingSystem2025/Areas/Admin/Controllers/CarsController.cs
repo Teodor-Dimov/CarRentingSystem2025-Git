@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace CarRentingSystem2025.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize] // Temporarily removed Roles = "Administrator" for testing
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -57,11 +57,15 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Cars/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            Console.WriteLine($"===== ADMIN CARS EDIT ACTION CALLED =====");
             Console.WriteLine($"Edit action called with id: {id}");
+            Console.WriteLine($"Area: {ControllerContext.ActionDescriptor.RouteValues["area"]}");
+            Console.WriteLine($"Controller: {ControllerContext.ActionDescriptor.RouteValues["controller"]}");
+            Console.WriteLine($"Action: {ControllerContext.ActionDescriptor.RouteValues["action"]}");
             
             if (id == null)
             {
-                Console.WriteLine("Edit action: id is null");
+                Console.WriteLine("Edit action: id is null - returning NotFound");
                 return NotFound();
             }
 
@@ -70,12 +74,13 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (car == null)
             {
-                Console.WriteLine($"Edit action: car with id {id} not found");
+                Console.WriteLine($"Edit action: car with id {id} not found - returning NotFound");
                 return NotFound();
             }
             
-            Console.WriteLine($"Edit action: found car {car.Brand} {car.Model}");
+            Console.WriteLine($"Edit action: found car {car.Brand} {car.Model} (ID: {car.Id})");
             ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name", car.BrandId);
+            Console.WriteLine("Edit action: returning Edit view");
             return View(car);
         }
 

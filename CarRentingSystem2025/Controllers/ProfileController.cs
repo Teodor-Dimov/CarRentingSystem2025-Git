@@ -47,12 +47,15 @@ namespace CarRentingSystem2025.Controllers
                     LastName = "",
                     Email = currentUser.Email ?? "",
                     PhoneNumber = "",
-                    DriversLicenseNumber = "",
+                    DriverLicenseNumber = "",
+                    DriverLicenseExpiry = DateTime.Now.AddYears(5), // Default 5 years validity
                     Address = "",
                     City = "",
                     Country = "",
                     PostalCode = "",
                     DateOfBirth = DateTime.Now.AddYears(-25), // Default age
+                    EmergencyContactName = "",
+                    EmergencyContactPhone = "",
                     MembershipStartDate = DateTime.Now,
                     CreatedAt = DateTime.Now,
                     IsVerified = false
@@ -117,7 +120,7 @@ namespace CarRentingSystem2025.Controllers
         // POST: Profile/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("Id,FirstName,LastName,Email,PhoneNumber,DriversLicenseNumber,Address,City,Country,PostalCode,DateOfBirth")] Customer customer)
+        public async Task<IActionResult> Edit([Bind("Id,FirstName,LastName,Email,PhoneNumber,DriverLicenseNumber,DriverLicenseExpiry,Address,City,Country,PostalCode,DateOfBirth,EmergencyContactName,EmergencyContactPhone")] Customer customer)
         {
             Console.WriteLine($"Profile Edit POST action called for customer ID: {customer.Id}");
             
@@ -146,12 +149,15 @@ namespace CarRentingSystem2025.Controllers
                     existingCustomer.LastName = customer.LastName;
                     existingCustomer.Email = customer.Email;
                     existingCustomer.PhoneNumber = customer.PhoneNumber;
-                    existingCustomer.DriversLicenseNumber = customer.DriversLicenseNumber;
+                    existingCustomer.DriverLicenseNumber = customer.DriverLicenseNumber;
+                    existingCustomer.DriverLicenseExpiry = customer.DriverLicenseExpiry;
                     existingCustomer.Address = customer.Address;
                     existingCustomer.City = customer.City;
                     existingCustomer.Country = customer.Country;
                     existingCustomer.PostalCode = customer.PostalCode;
                     existingCustomer.DateOfBirth = customer.DateOfBirth;
+                    existingCustomer.EmergencyContactName = customer.EmergencyContactName;
+                    existingCustomer.EmergencyContactPhone = customer.EmergencyContactPhone;
                     existingCustomer.UpdatedAt = DateTime.Now;
 
                     _context.Update(existingCustomer);
