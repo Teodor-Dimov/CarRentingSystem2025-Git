@@ -78,6 +78,7 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             var rental = await _context.Rentals
                 .Include(r => r.Car)
+                .ThenInclude(c => c.BrandEntity)
                 .Include(r => r.Customer)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -89,10 +90,26 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             Console.WriteLine($"Admin Rentals Edit: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
             Console.WriteLine($"Rental details: {rental.Car?.Brand} {rental.Car?.Model} from {rental.PickupDate:yyyy-MM-dd} to {rental.DropoffDate:yyyy-MM-dd}");
+            Console.WriteLine($"Rental CarId: {rental.CarId}, CustomerId: {rental.CustomerId}");
             
-            var cars = await _context.Cars.ToListAsync();
+            var cars = await _context.Cars.Include(c => c.BrandEntity).ToListAsync();
             var customers = await _context.Customers.ToListAsync();
             Console.WriteLine($"Loaded {cars.Count} cars and {customers.Count} customers for dropdown");
+            
+            // Ensure Brand property is populated from BrandEntity
+            foreach (var car in cars)
+            {
+                if (car.BrandEntity != null && string.IsNullOrEmpty(car.Brand))
+                {
+                    car.Brand = car.BrandEntity.Name;
+                }
+            }
+            
+            // Debug: Check if the current car and customer are in the lists
+            var currentCar = cars.FirstOrDefault(c => c.Id == rental.CarId);
+            var currentCustomer = customers.FirstOrDefault(c => c.Id == rental.CustomerId);
+            Console.WriteLine($"Current car in list: {(currentCar != null ? "YES" : "NO")} - {currentCar?.DisplayName}");
+            Console.WriteLine($"Current customer in list: {(currentCustomer != null ? "YES" : "NO")} - {currentCustomer?.DisplayName}");
             
             ViewBag.Cars = cars;
             ViewBag.Customers = customers;
@@ -134,8 +151,20 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Cars = await _context.Cars.ToListAsync();
-            ViewBag.Customers = await _context.Customers.ToListAsync();
+            var cars = await _context.Cars.Include(c => c.BrandEntity).ToListAsync();
+            var customers = await _context.Customers.ToListAsync();
+            
+            // Ensure Brand property is populated from BrandEntity
+            foreach (var car in cars)
+            {
+                if (car.BrandEntity != null && string.IsNullOrEmpty(car.Brand))
+                {
+                    car.Brand = car.BrandEntity.Name;
+                }
+            }
+            
+            ViewBag.Cars = cars;
+            ViewBag.Customers = customers;
             ViewBag.StatusOptions = new[] { "Active", "Completed", "Cancelled", "Overdue" };
 
             return View(rental);
