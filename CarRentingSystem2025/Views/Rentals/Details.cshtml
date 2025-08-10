@@ -168,7 +168,7 @@
                         
                         @if (User.IsInRole("Administrator"))
                         {
-                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                            <a asp-area="Admin" asp-controller="Rentals" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
                         }
