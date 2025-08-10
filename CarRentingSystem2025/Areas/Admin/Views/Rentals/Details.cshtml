@@ -49,7 +49,7 @@
                                 <dd class="col-sm-8">@Model.DropoffDate.ToString("MMM dd, yyyy")</dd>
 
                                 <dt class="col-sm-4">Total Amount:</dt>
-                                <dd class="col-sm-8"><strong>$@Model.TotalAmount.ToString("N2")</strong></dd>
+                                <dd class="col-sm-8"><strong>€@Model.TotalAmount.ToString("N2")</strong></dd>
 
                                 <dt class="col-sm-4">Pickup Location:</dt>
                                 <dd class="col-sm-8">@Model.PickupLocation</dd>
@@ -61,19 +61,19 @@
                         <div class="col-md-6">
                             <dl class="row">
                                 <dt class="col-sm-4">Deposit Amount:</dt>
-                                <dd class="col-sm-8">$@(Model.DepositAmount?.ToString("N2") ?? "0.00")</dd>
+                                <dd class="col-sm-8">€@(Model.DepositAmount?.ToString("N2") ?? "0.00")</dd>
 
                                 <dt class="col-sm-4">Insurance Type:</dt>
                                 <dd class="col-sm-8">@Model.InsuranceType</dd>
 
                                 <dt class="col-sm-4">Insurance Cost:</dt>
-                                <dd class="col-sm-8">$@(Model.InsuranceCost?.ToString("N2") ?? "0.00")</dd>
+                                <dd class="col-sm-8">€@(Model.InsuranceCost?.ToString("N2") ?? "0.00")</dd>
 
                                 <dt class="col-sm-4">Late Fees:</dt>
-                                <dd class="col-sm-8">$@(Model.LateFees?.ToString("N2") ?? "0.00")</dd>
+                                <dd class="col-sm-8">€@(Model.LateFees?.ToString("N2") ?? "0.00")</dd>
 
                                 <dt class="col-sm-4">Damage Fees:</dt>
-                                <dd class="col-sm-8">$@(Model.DamageFees?.ToString("N2") ?? "0.00")</dd>
+                                <dd class="col-sm-8">€@(Model.DamageFees?.ToString("N2") ?? "0.00")</dd>
 
                                 <dt class="col-sm-4">Created:</dt>
                                 <dd class="col-sm-8">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</dd>
@@ -193,7 +193,7 @@
                         <dd class="col-sm-8">@Model.Customer?.TotalRentals</dd>
 
                         <dt class="col-sm-4">Total Spent:</dt>
-                        <dd class="col-sm-8">$@(Model.Customer?.TotalSpent.ToString("N2") ?? "0.00")</dd>
+                        <dd class="col-sm-8">€@(Model.Customer?.TotalSpent.ToString("N2") ?? "0.00")</dd>
                     </dl>
                 </div>
             </div>
