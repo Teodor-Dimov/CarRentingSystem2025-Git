@@ -31,15 +31,8 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Rentals/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            Console.WriteLine($"===== ADMIN RENTALS DETAILS ACTION CALLED =====");
-            Console.WriteLine($"Admin Rentals Details action called with id: {id}");
-            Console.WriteLine($"Area: {ControllerContext.ActionDescriptor.RouteValues["area"]}");
-            Console.WriteLine($"Controller: {ControllerContext.ActionDescriptor.RouteValues["controller"]}");
-            Console.WriteLine($"Action: {ControllerContext.ActionDescriptor.RouteValues["action"]}");
-            
             if (id == null)
             {
-                Console.WriteLine("Admin Rentals Details: id is null - returning NotFound");
                 return NotFound();
             }
 
@@ -51,28 +44,17 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             if (rental == null)
             {
-                Console.WriteLine($"Admin Rentals Details: rental with id {id} not found - returning NotFound");
                 return NotFound();
             }
 
-            Console.WriteLine($"Admin Rentals Details: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
-            Console.WriteLine($"Rental details: {rental.Car?.Brand} {rental.Car?.Model} from {rental.PickupDate:yyyy-MM-dd} to {rental.DropoffDate:yyyy-MM-dd}");
-            Console.WriteLine("Admin Rentals Details: returning Details view");
             return View(rental);
         }
 
         // GET: Admin/Rentals/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            Console.WriteLine($"===== ADMIN RENTALS EDIT ACTION CALLED =====");
-            Console.WriteLine($"Admin Rentals Edit action called with id: {id}");
-            Console.WriteLine($"Area: {ControllerContext.ActionDescriptor.RouteValues["area"]}");
-            Console.WriteLine($"Controller: {ControllerContext.ActionDescriptor.RouteValues["controller"]}");
-            Console.WriteLine($"Action: {ControllerContext.ActionDescriptor.RouteValues["action"]}");
-            
             if (id == null)
             {
-                Console.WriteLine("Admin Rentals Edit: id is null - returning NotFound");
                 return NotFound();
             }
 
@@ -84,87 +66,120 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
             if (rental == null)
             {
-                Console.WriteLine($"Admin Rentals Edit: rental with id {id} not found - returning NotFound");
                 return NotFound();
             }
 
-            Console.WriteLine($"Admin Rentals Edit: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
-            Console.WriteLine($"Rental details: {rental.Car?.Brand} {rental.Car?.Model} from {rental.PickupDate:yyyy-MM-dd} to {rental.DropoffDate:yyyy-MM-dd}");
-            Console.WriteLine($"Rental CarId: {rental.CarId}, CustomerId: {rental.CustomerId}");
-            
-            var cars = await _context.Cars.Include(c => c.BrandEntity).ToListAsync();
-            var customers = await _context.Customers.ToListAsync();
-            Console.WriteLine($"Loaded {cars.Count} cars and {customers.Count} customers for dropdown");
-            
-            // Ensure Brand property is populated from BrandEntity
-            foreach (var car in cars)
-            {
-                if (car.BrandEntity != null && string.IsNullOrEmpty(car.Brand))
-                {
-                    car.Brand = car.BrandEntity.Name;
-                }
-            }
-            
-            // Debug: Check if the current car and customer are in the lists
-            var currentCar = cars.FirstOrDefault(c => c.Id == rental.CarId);
-            var currentCustomer = customers.FirstOrDefault(c => c.Id == rental.CustomerId);
-            Console.WriteLine($"Current car in list: {(currentCar != null ? "YES" : "NO")} - {currentCar?.DisplayName}");
-            Console.WriteLine($"Current customer in list: {(currentCustomer != null ? "YES" : "NO")} - {currentCustomer?.DisplayName}");
-            
-            ViewBag.Cars = cars;
-            ViewBag.Customers = customers;
+            ViewBag.Cars = await _context.Cars.Include(c => c.BrandEntity).ToListAsync();
+            ViewBag.Customers = await _context.Customers.ToListAsync();
             ViewBag.StatusOptions = new[] { "Active", "Completed", "Cancelled", "Overdue" };
 
-            Console.WriteLine("Admin Rentals Edit: returning Edit view");
             return View(rental);
         }
 
         // POST: Admin/Rentals/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CarId,CustomerId,PickupDate,DropoffDate,TotalAmount,PickupLocation,DropoffLocation,Status,ActualPickupTime,ActualDropoffTime,DepositAmount,InsuranceType,InsuranceCost,LateFees,DamageFees,DamageDescription,SpecialRequests,CustomerRating,CustomerReview,UpdatedAt")] Rental rental)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,CarId,CustomerId,PickupDate,DropoffDate,TotalAmount,PickupLocation,DropoffLocation,Status,ActualPickupTime,ActualDropoffTime,DepositAmount,InsuranceType,InsuranceCost,LateFees,DamageFees,DamageDescription,SpecialRequests,CustomerRating,CustomerReview,CreatedAt")] Rental rental)
         {
-            if (id != rental.Id)
+            try
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                Console.WriteLine($"Edit POST called with id: {id}");
+                Console.WriteLine($"Rental object: {rental?.Id}, CarId: {rental?.CarId}, CustomerId: {rental?.CustomerId}");
+                Console.WriteLine($"Form data - CarId: {Request.Form["CarId"]}, CustomerId: {Request.Form["CustomerId"]}");
+                Console.WriteLine($"Model binding - CarId: {rental?.CarId}, CustomerId: {rental?.CustomerId}");
+                Console.WriteLine($"Form data - PickupDate: {Request.Form["PickupDate"]}, DropoffDate: {Request.Form["DropoffDate"]}");
+                Console.WriteLine($"Form data - TotalAmount: {Request.Form["TotalAmount"]}, Status: {Request.Form["Status"]}");
+                Console.WriteLine($"Form data - PickupLocation: {Request.Form["PickupLocation"]}, DropoffLocation: {Request.Form["DropoffLocation"]}");
+                
+                if (id != rental.Id)
                 {
-                    rental.UpdatedAt = DateTime.Now;
-                    _context.Update(rental);
-                    await _context.SaveChangesAsync();
+                    Console.WriteLine("ID mismatch");
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
+
+                // For editing existing rentals, remove validation errors for dates that might be in the past
+                ModelState.Remove("PickupDate");
+                ModelState.Remove("DropoffDate");
+
+                // Validate that CarId and CustomerId exist
+                var carExists = await _context.Cars.AnyAsync(c => c.Id == rental.CarId);
+                var customerExists = await _context.Customers.AnyAsync(c => c.Id == rental.CustomerId);
+
+                if (!carExists)
                 {
-                    if (!RentalExists(rental.Id))
+                    ModelState.AddModelError("CarId", "Selected car does not exist");
+                    Console.WriteLine($"Car with ID {rental.CarId} does not exist");
+                }
+
+                if (!customerExists)
+                {
+                    ModelState.AddModelError("CustomerId", "Selected customer does not exist");
+                    Console.WriteLine($"Customer with ID {rental.CustomerId} does not exist");
+                }
+
+                if (ModelState.IsValid && carExists && customerExists)
+                {
+                    Console.WriteLine("ModelState is valid, updating rental...");
+                    
+                    // Load the existing rental from database
+                    var existingRental = await _context.Rentals.FindAsync(id);
+                    if (existingRental == null)
                     {
+                        Console.WriteLine("Existing rental not found");
                         return NotFound();
                     }
-                    else
+                    
+                    // Update only the properties that were changed
+                    existingRental.CarId = rental.CarId;
+                    existingRental.CustomerId = rental.CustomerId;
+                    existingRental.PickupDate = rental.PickupDate;
+                    existingRental.DropoffDate = rental.DropoffDate;
+                    existingRental.TotalAmount = rental.TotalAmount;
+                    existingRental.Status = rental.Status;
+                    existingRental.PickupLocation = rental.PickupLocation;
+                    existingRental.DropoffLocation = rental.DropoffLocation;
+                    existingRental.ActualPickupTime = rental.ActualPickupTime;
+                    existingRental.ActualDropoffTime = rental.ActualDropoffTime;
+                    existingRental.DepositAmount = rental.DepositAmount;
+                    existingRental.InsuranceType = rental.InsuranceType;
+                    existingRental.InsuranceCost = rental.InsuranceCost;
+                    existingRental.LateFees = rental.LateFees;
+                    existingRental.DamageFees = rental.DamageFees;
+                    existingRental.DamageDescription = rental.DamageDescription;
+                    existingRental.SpecialRequests = rental.SpecialRequests;
+                    existingRental.CustomerRating = rental.CustomerRating;
+                    existingRental.CustomerReview = rental.CustomerReview;
+                    existingRental.UpdatedAt = DateTime.Now;
+                    
+                    Console.WriteLine($"Updated values - CarId: {existingRental.CarId}, CustomerId: {existingRental.CustomerId}");
+                    Console.WriteLine($"Updated dates - Pickup: {existingRental.PickupDate}, Dropoff: {existingRental.DropoffDate}");
+                    Console.WriteLine($"Updated amount: {existingRental.TotalAmount}");
+                    
+                    _context.Update(existingRental);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("Rental updated successfully");
+                    TempData["SuccessMessage"] = "Rental updated successfully!";
+                    Console.WriteLine("Redirecting to Index page...");
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    Console.WriteLine("ModelState is invalid:");
+                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                     {
-                        throw;
+                        Console.WriteLine($"Error: {error.ErrorMessage}");
                     }
                 }
-                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in Edit POST: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                TempData["ErrorMessage"] = "An error occurred while updating the rental.";
             }
 
-            var cars = await _context.Cars.Include(c => c.BrandEntity).ToListAsync();
-            var customers = await _context.Customers.ToListAsync();
-            
-            // Ensure Brand property is populated from BrandEntity
-            foreach (var car in cars)
-            {
-                if (car.BrandEntity != null && string.IsNullOrEmpty(car.Brand))
-                {
-                    car.Brand = car.BrandEntity.Name;
-                }
-            }
-            
-            ViewBag.Cars = cars;
-            ViewBag.Customers = customers;
+            ViewBag.Cars = await _context.Cars.Include(c => c.BrandEntity).ToListAsync();
+            ViewBag.Customers = await _context.Customers.ToListAsync();
             ViewBag.StatusOptions = new[] { "Active", "Completed", "Cancelled", "Overdue" };
 
             return View(rental);

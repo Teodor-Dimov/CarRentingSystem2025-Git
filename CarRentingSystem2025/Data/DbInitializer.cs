@@ -429,6 +429,84 @@ namespace CarRentingSystem2025.Data
                 context.Customers.AddRange(customers);
                 await context.SaveChangesAsync();
             }
+
+            // Seed Sample Rentals
+            if (!context.Rentals.Any())
+            {
+                var cars = context.Cars.ToList();
+                var customers = context.Customers.ToList();
+
+                if (cars.Any() && customers.Any())
+                {
+                    var rentals = new List<Rental>
+                    {
+                        new Rental
+                        {
+                            CarId = cars[0].Id,
+                            CustomerId = customers[0].Id,
+                            PickupDate = DateTime.Now.AddDays(1),
+                            DropoffDate = DateTime.Now.AddDays(3),
+                            TotalAmount = 255.00m,
+                            Status = "Active",
+                            PickupLocation = "Airport Terminal 1",
+                            DropoffLocation = "Downtown Office",
+                            ActualPickupTime = DateTime.Now.AddDays(1).AddHours(10),
+                            ActualDropoffTime = DateTime.Now.AddDays(3).AddHours(16),
+                            DepositAmount = 100.00m,
+                            InsuranceType = "Basic",
+                            InsuranceCost = 25.00m,
+                            LateFees = 0.00m,
+                            DamageFees = 0.00m,
+                            SpecialRequests = "GPS navigation preferred",
+                            CustomerRating = 5,
+                            CustomerReview = "Excellent service, car was in perfect condition",
+                            CreatedAt = DateTime.Now.AddDays(-2)
+                        },
+                        new Rental
+                        {
+                            CarId = cars[1].Id,
+                            CustomerId = customers[1].Id,
+                            PickupDate = DateTime.Now.AddDays(2),
+                            DropoffDate = DateTime.Now.AddDays(5),
+                            TotalAmount = 375.00m,
+                            Status = "Pending",
+                            PickupLocation = "Hotel Lobby",
+                            DropoffLocation = "Airport Terminal 2",
+                            DepositAmount = 150.00m,
+                            InsuranceType = "Premium",
+                            InsuranceCost = 50.00m,
+                            LateFees = 0.00m,
+                            DamageFees = 0.00m,
+                            SpecialRequests = "Child seat needed",
+                            CreatedAt = DateTime.Now.AddDays(-1)
+                        },
+                        new Rental
+                        {
+                            CarId = cars[2].Id,
+                            CustomerId = customers[2].Id,
+                            PickupDate = DateTime.Now.AddDays(-5),
+                            DropoffDate = DateTime.Now.AddDays(-2),
+                            TotalAmount = 165.00m,
+                            Status = "Completed",
+                            PickupLocation = "Downtown Office",
+                            DropoffLocation = "Airport Terminal 1",
+                            ActualPickupTime = DateTime.Now.AddDays(-5).AddHours(9),
+                            ActualDropoffTime = DateTime.Now.AddDays(-2).AddHours(17),
+                            DepositAmount = 75.00m,
+                            InsuranceType = "Standard",
+                            InsuranceCost = 30.00m,
+                            LateFees = 0.00m,
+                            DamageFees = 0.00m,
+                            CustomerRating = 4,
+                            CustomerReview = "Good experience, would rent again",
+                            CreatedAt = DateTime.Now.AddDays(-7)
+                        }
+                    };
+
+                    context.Rentals.AddRange(rentals);
+                    await context.SaveChangesAsync();
+                }
+            }
         }
     }
 } 
