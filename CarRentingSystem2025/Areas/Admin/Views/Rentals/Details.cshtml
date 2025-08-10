@@ -197,31 +197,5 @@
         </div>
     </div>
 
-    <!-- Status Update Form -->
-    <div class="card mt-4">
-        <div class="card-header">
-            <h5 class="mb-0"><i class="fas fa-edit"></i> Update Status</h5>
-        </div>
-        <div class="card-body">
-            <form asp-action="UpdateStatus" method="post" class="row g-3">
-                <input type="hidden" name="id" value="@Model.Id" />
-                <div class="col-md-4">
-                    <label for="newStatus" class="form-label">New Status</label>
-                    <select class="form-select" id="newStatus" name="newStatus" required>
-                        <option value="">Select Status</option>
-                        <option value="Active" @(Model.Status == "Active" ? "selected" : "")>Active</option>
-                        <option value="Completed" @(Model.Status == "Completed" ? "selected" : "")>Completed</option>
-                        <option value="Cancelled" @(Model.Status == "Cancelled" ? "selected" : "")>Cancelled</option>
-                        <option value="Overdue" @(Model.Status == "Overdue" ? "selected" : "")>Overdue</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="submit" class="btn btn-primary d-block w-100">
-                        <i class="fas fa-save"></i> Update Status
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 </div>
