@@ -4,24 +4,24 @@
     Layout = "_AdminLayout";
 }
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-edit"></i> Edit Car</h2>
-        <a asp-area="Admin" asp-action="Index" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Cars
-        </a>
-    </div>
-
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-car"></i> Edit Car Information
-                    </h5>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit"></i> Edit Car</h4>
                 </div>
                 <div class="card-body">
-                    <form asp-area="Admin" asp-action="Edit" method="post">
+                    <form asp-area="Admin" asp-controller="Cars" asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="Brand" />
@@ -29,18 +29,29 @@
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="BrandId" class="form-label">Brand</label>
-                                    <select asp-for="BrandId" class="form-select" asp-items="ViewBag.BrandId">
+                                <div class="form-group mb-3">
+                                    <label asp-for="BrandId" class="control-label">Brand</label>
+                                    <select name="BrandId" class="form-select">
                                         <option value="">-- Select Brand --</option>
+                                        @foreach (var brand in ViewBag.BrandId)
+                                        {
+                                            if (brand.Value == Model.BrandId.ToString())
+                                            {
+                                                <option value="@brand.Value" selected>@brand.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@brand.Value">@brand.Text</option>
+                                            }
+                                        }
                                     </select>
                                     <span asp-validation-for="BrandId" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="Model" class="form-label">Model</label>
-                                    <input asp-for="Model" class="form-control" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="Model" class="control-label">Model</label>
+                                    <input name="Model" class="form-control" value="@Model.Model" />
                                     <span asp-validation-for="Model" class="text-danger"></span>
                                 </div>
                             </div>
@@ -48,23 +59,23 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="Year" class="form-label">Year</label>
-                                    <input asp-for="Year" class="form-control" type="number" min="1900" max="2030" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="Year" class="control-label">Year</label>
+                                    <input name="Year" class="form-control" type="number" min="1900" max="2030" value="@Model.Year" />
                                     <span asp-validation-for="Year" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="LicensePlate" class="form-label">License Plate</label>
-                                    <input asp-for="LicensePlate" class="form-control" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="LicensePlate" class="control-label">License Plate</label>
+                                    <input name="LicensePlate" class="form-control" value="@Model.LicensePlate" />
                                     <span asp-validation-for="LicensePlate" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="Color" class="form-label">Color</label>
-                                    <input asp-for="Color" class="form-control" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="Color" class="control-label">Color</label>
+                                    <input name="Color" class="form-control" value="@Model.Color" />
                                     <span asp-validation-for="Color" class="text-danger"></span>
                                 </div>
                             </div>
@@ -72,32 +83,32 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="DailyRate" class="form-label">Daily Rate (€)</label>
-                                    <input asp-for="DailyRate" class="form-control" type="number" step="0.01" min="0" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="DailyRate" class="control-label">Daily Rate (€)</label>
+                                    <input name="DailyRate" class="form-control" type="number" step="0.01" min="0" value="@Model.DailyRate" />
                                     <span asp-validation-for="DailyRate" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="FuelType" class="form-label">Fuel Type</label>
-                                    <select asp-for="FuelType" class="form-select">
+                                <div class="form-group mb-3">
+                                    <label asp-for="FuelType" class="control-label">Fuel Type</label>
+                                    <select name="FuelType" class="form-select">
                                         <option value="">-- Select Fuel Type --</option>
-                                        <option value="Gasoline">Gasoline</option>
-                                        <option value="Diesel">Diesel</option>
-                                        <option value="Electric">Electric</option>
-                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="Gasoline" @(Model.FuelType == "Gasoline" ? "selected" : "")>Gasoline</option>
+                                        <option value="Diesel" @(Model.FuelType == "Diesel" ? "selected" : "")>Diesel</option>
+                                        <option value="Electric" @(Model.FuelType == "Electric" ? "selected" : "")>Electric</option>
+                                        <option value="Hybrid" @(Model.FuelType == "Hybrid" ? "selected" : "")>Hybrid</option>
                                     </select>
                                     <span asp-validation-for="FuelType" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="Transmission" class="form-label">Transmission</label>
-                                    <select asp-for="Transmission" class="form-select">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Transmission" class="control-label">Transmission</label>
+                                    <select name="Transmission" class="form-select">
                                         <option value="">-- Select Transmission --</option>
-                                        <option value="Manual">Manual</option>
-                                        <option value="Automatic">Automatic</option>
+                                        <option value="Manual" @(Model.Transmission == "Manual" ? "selected" : "")>Manual</option>
+                                        <option value="Automatic" @(Model.Transmission == "Automatic" ? "selected" : "")>Automatic</option>
                                     </select>
                                     <span asp-validation-for="Transmission" class="text-danger"></span>
                                 </div>
@@ -106,38 +117,38 @@
 
                         <div class="row">
                             <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label asp-for="Seats" class="form-label">Seats</label>
-                                    <input asp-for="Seats" class="form-control" type="number" min="1" max="10" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="Seats" class="control-label">Seats</label>
+                                    <input name="Seats" class="form-control" type="number" min="1" max="10" value="@Model.Seats" />
                                     <span asp-validation-for="Seats" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label asp-for="Mileage" class="form-label">Mileage (km)</label>
-                                    <input asp-for="Mileage" class="form-control" type="number" min="0" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="Mileage" class="control-label">Mileage (km)</label>
+                                    <input name="Mileage" class="form-control" type="number" min="0" value="@Model.Mileage" />
                                     <span asp-validation-for="Mileage" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label asp-for="EngineSize" class="form-label">Engine Size</label>
-                                    <input asp-for="EngineSize" class="form-control" placeholder="e.g., 2.0L" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="EngineSize" class="control-label">Engine Size</label>
+                                    <input name="EngineSize" class="form-control" placeholder="e.g., 2.0L" value="@Model.EngineSize" />
                                     <span asp-validation-for="EngineSize" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label asp-for="BodyType" class="form-label">Body Type</label>
-                                    <select asp-for="BodyType" class="form-select">
+                                <div class="form-group mb-3">
+                                    <label asp-for="BodyType" class="control-label">Body Type</label>
+                                    <select name="BodyType" class="form-select">
                                         <option value="">-- Select Body Type --</option>
-                                        <option value="Sedan">Sedan</option>
-                                        <option value="SUV">SUV</option>
-                                        <option value="Hatchback">Hatchback</option>
-                                        <option value="Coupe">Coupe</option>
-                                        <option value="Wagon">Wagon</option>
-                                        <option value="Van">Van</option>
-                                        <option value="Truck">Truck</option>
+                                        <option value="Sedan" @(Model.BodyType == "Sedan" ? "selected" : "")>Sedan</option>
+                                        <option value="SUV" @(Model.BodyType == "SUV" ? "selected" : "")>SUV</option>
+                                        <option value="Hatchback" @(Model.BodyType == "Hatchback" ? "selected" : "")>Hatchback</option>
+                                        <option value="Coupe" @(Model.BodyType == "Coupe" ? "selected" : "")>Coupe</option>
+                                        <option value="Wagon" @(Model.BodyType == "Wagon" ? "selected" : "")>Wagon</option>
+                                        <option value="Van" @(Model.BodyType == "Van" ? "selected" : "")>Van</option>
+                                        <option value="Truck" @(Model.BodyType == "Truck" ? "selected" : "")>Truck</option>
                                     </select>
                                     <span asp-validation-for="BodyType" class="text-danger"></span>
                                 </div>
@@ -146,29 +157,29 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="DriveType" class="form-label">Drive Type</label>
-                                    <select asp-for="DriveType" class="form-select">
+                                <div class="form-group mb-3">
+                                    <label asp-for="DriveType" class="control-label">Drive Type</label>
+                                    <select name="DriveType" class="form-select">
                                         <option value="">-- Select Drive Type --</option>
-                                        <option value="FWD">Front Wheel Drive (FWD)</option>
-                                        <option value="RWD">Rear Wheel Drive (RWD)</option>
-                                        <option value="AWD">All Wheel Drive (AWD)</option>
-                                        <option value="4WD">Four Wheel Drive (4WD)</option>
+                                        <option value="FWD" @(Model.DriveType == "FWD" ? "selected" : "")>Front Wheel Drive (FWD)</option>
+                                        <option value="RWD" @(Model.DriveType == "RWD" ? "selected" : "")>Rear Wheel Drive (RWD)</option>
+                                        <option value="AWD" @(Model.DriveType == "AWD" ? "selected" : "")>All Wheel Drive (AWD)</option>
+                                        <option value="4WD" @(Model.DriveType == "4WD" ? "selected" : "")>Four Wheel Drive (4WD)</option>
                                     </select>
                                     <span asp-validation-for="DriveType" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="ReleaseDate" class="form-label">Release Date</label>
-                                    <input asp-for="ReleaseDate" class="form-control" type="date" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="ReleaseDate" class="control-label">Release Date</label>
+                                    <input name="ReleaseDate" class="form-control" type="date" value="@Model.ReleaseDate.ToString("yyyy-MM-dd")" />
                                     <span asp-validation-for="ReleaseDate" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="LastServiceDate" class="form-label">Last Service Date</label>
-                                    <input asp-for="LastServiceDate" class="form-control" type="date" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="LastServiceDate" class="control-label">Last Service Date</label>
+                                    <input name="LastServiceDate" class="form-control" type="date" value="@Model.LastServiceDate.ToString("yyyy-MM-dd")" />
                                     <span asp-validation-for="LastServiceDate" class="text-danger"></span>
                                 </div>
                             </div>
@@ -176,95 +187,66 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="NextServiceDate" class="form-label">Next Service Date</label>
-                                    <input asp-for="NextServiceDate" class="form-control" type="date" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="NextServiceDate" class="control-label">Next Service Date</label>
+                                    <input name="NextServiceDate" class="form-control" type="date" value="@Model.NextServiceDate.ToString("yyyy-MM-dd")" />
                                     <span asp-validation-for="NextServiceDate" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="ImageUrl" class="form-label">Image URL</label>
-                                    <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="ImageUrl" class="control-label">Image URL</label>
+                                    <input name="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" value="@Model.ImageUrl" />
                                     <span asp-validation-for="ImageUrl" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Features" class="form-label">Features (comma-separated)</label>
-                            <input asp-for="Features" class="form-control" placeholder="GPS, Bluetooth, Backup Camera, etc." />
+                        <div class="form-group mb-3">
+                            <label asp-for="Features" class="control-label">Features (comma-separated)</label>
+                            <input name="Features" class="form-control" placeholder="GPS, Bluetooth, Backup Camera, etc." value="@Model.Features" />
                             <span asp-validation-for="Features" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="control-label">Description</label>
+                            <textarea name="Description" class="form-control" rows="3">@Model.Description</textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-check mb-3">
-                                    <input asp-for="IsAvailable" class="form-check-input" />
+                                    <input name="IsAvailable" type="checkbox" class="form-check-input" value="true" @(Model.IsAvailable ? "checked" : "") />
+                                    <input name="IsAvailable" type="hidden" value="false" />
                                     <label asp-for="IsAvailable" class="form-check-label">Available for Rent</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-check mb-3">
-                                    <input asp-for="IsFeatured" class="form-check-input" />
+                                    <input name="IsFeatured" type="checkbox" class="form-check-input" value="true" @(Model.IsFeatured ? "checked" : "") />
+                                    <input name="IsFeatured" type="hidden" value="false" />
                                     <label asp-for="IsFeatured" class="form-check-label">Featured Car</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="Rating" class="form-label">Rating (0-5)</label>
-                                    <input asp-for="Rating" class="form-control" type="number" step="0.1" min="0" max="5" />
+                                <div class="form-group mb-3">
+                                    <label asp-for="Rating" class="control-label">Rating (0-5)</label>
+                                    <input name="Rating" class="form-control" type="number" step="0.1" min="0" max="5" value="@Model.Rating" />
                                     <span asp-validation-for="Rating" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a asp-action="Index" class="btn btn-secondary me-md-2">Cancel</a>
+                        <div class="form-group">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Update Car
+                                <i class="fas fa-save"></i> Save Changes
                             </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-header bg-info text-white">
-                    <h6 class="mb-0">
-                        <i class="fas fa-info-circle"></i> Car Statistics
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <h4 class="text-primary">@Model.NumberOfRentals</h4>
-                            <small class="text-muted">Total Rentals</small>
-                        </div>
-                        <div class="col-6">
-                            <h4 class="text-warning">@Model.Rating</h4>
-                            <small class="text-muted">Rating</small>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <h6 class="text-success">€@Model.DailyRate.ToString("F2")</h6>
-                            <small class="text-muted">Daily Rate</small>
-                        </div>
-                        <div class="col-6">
-                            <h6 class="text-info">@Model.Mileage.ToString("N0") km</h6>
-                            <small class="text-muted">Mileage</small>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

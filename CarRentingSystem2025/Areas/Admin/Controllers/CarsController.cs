@@ -33,19 +33,8 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Cars/Create
         public async Task<IActionResult> Create()
         {
-            Console.WriteLine("===== ADMIN CARS CREATE ACTION CALLED =====");
-            
             var brands = await _context.Brands.ToListAsync();
-            Console.WriteLine($"Found {brands.Count} brands in database");
-            
-            foreach (var brand in brands)
-            {
-                Console.WriteLine($"Brand: {brand.Name} (ID: {brand.Id})");
-            }
-            
             ViewBag.BrandId = new SelectList(brands, "Id", "Name");
-            Console.WriteLine("ViewBag.BrandId set successfully");
-            
             return View();
         }
 
@@ -72,15 +61,8 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         // GET: Admin/Cars/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            Console.WriteLine($"===== ADMIN CARS EDIT ACTION CALLED =====");
-            Console.WriteLine($"Edit action called with id: {id}");
-            Console.WriteLine($"Area: {ControllerContext.ActionDescriptor.RouteValues["area"]}");
-            Console.WriteLine($"Controller: {ControllerContext.ActionDescriptor.RouteValues["controller"]}");
-            Console.WriteLine($"Action: {ControllerContext.ActionDescriptor.RouteValues["action"]}");
-            
             if (id == null)
             {
-                Console.WriteLine("Edit action: id is null - returning NotFound");
                 return NotFound();
             }
 
@@ -89,13 +71,10 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (car == null)
             {
-                Console.WriteLine($"Edit action: car with id {id} not found - returning NotFound");
                 return NotFound();
             }
             
-            Console.WriteLine($"Edit action: found car {car.Brand} {car.Model} (ID: {car.Id})");
             ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name", car.BrandId);
-            Console.WriteLine("Edit action: returning Edit view");
             return View(car);
         }
 
@@ -104,49 +83,104 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,BrandId,Brand,Model,Year,LicensePlate,DailyRate,Color,FuelType,Transmission,Seats,Mileage,EngineSize,BodyType,DriveType,ReleaseDate,LastServiceDate,NextServiceDate,Features,Description,ImageUrl,IsAvailable,IsFeatured,Rating,NumberOfRentals,CreatedAt,UpdatedAt")] Car car)
         {
-            if (id != car.Id)
+            try
             {
-                return NotFound();
-            }
-
-            // Log validation errors for debugging
-            if (!ModelState.IsValid)
-            {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                Console.WriteLine($"Edit POST called with id: {id}");
+                Console.WriteLine($"Car object: {car?.Id}, BrandId: {car?.BrandId}, Model: {car?.Model}");
+                Console.WriteLine($"Form data - BrandId: {Request.Form["BrandId"]}, Model: {Request.Form["Model"]}");
+                Console.WriteLine($"Form data - Year: {Request.Form["Year"]}, DailyRate: {Request.Form["DailyRate"]}");
+                Console.WriteLine($"Form data - IsAvailable: {Request.Form["IsAvailable"]}, IsFeatured: {Request.Form["IsFeatured"]}");
+                Console.WriteLine($"Form data - LicensePlate: {Request.Form["LicensePlate"]}");
+                
+                if (id != car.Id)
                 {
-                    Console.WriteLine($"Validation Error: {error.ErrorMessage}");
+                    Console.WriteLine("ID mismatch");
+                    return NotFound();
                 }
-            }
-            
-            if (ModelState.IsValid)
-            {
-                try
+
+                // Validate that BrandId exists
+                var brandExists = await _context.Brands.AnyAsync(b => b.Id == car.BrandId);
+                if (!brandExists)
                 {
+                    ModelState.AddModelError("BrandId", "Selected brand does not exist");
+                    Console.WriteLine($"Brand with ID {car.BrandId} does not exist");
+                }
+
+                // Remove validation errors for fields that we handle manually
+                ModelState.Remove("Brand");
+                ModelState.Remove("BrandEntity");
+                ModelState.Remove("LicensePlate");
+                
+                if (ModelState.IsValid && brandExists)
+                {
+                    Console.WriteLine("ModelState is valid, updating car...");
+                    
+                    // Load the existing car from database
+                    var existingCar = await _context.Cars.FindAsync(id);
+                    if (existingCar == null)
+                    {
+                        Console.WriteLine("Existing car not found");
+                        return NotFound();
+                    }
+                    
+                    // Update only the properties that were changed
+                    existingCar.BrandId = car.BrandId;
+                    existingCar.Model = car.Model;
+                    existingCar.Year = car.Year;
+                    existingCar.LicensePlate = car.LicensePlate;
+                    existingCar.DailyRate = car.DailyRate;
+                    existingCar.Color = car.Color;
+                    existingCar.FuelType = car.FuelType;
+                    existingCar.Transmission = car.Transmission;
+                    existingCar.Seats = car.Seats;
+                    existingCar.Mileage = car.Mileage;
+                    existingCar.EngineSize = car.EngineSize;
+                    existingCar.BodyType = car.BodyType;
+                    existingCar.DriveType = car.DriveType;
+                    existingCar.ReleaseDate = car.ReleaseDate;
+                    existingCar.LastServiceDate = car.LastServiceDate;
+                    existingCar.NextServiceDate = car.NextServiceDate;
+                    existingCar.Features = car.Features;
+                    existingCar.Description = car.Description;
+                    existingCar.ImageUrl = car.ImageUrl;
+                    existingCar.IsAvailable = car.IsAvailable;
+                    existingCar.IsFeatured = car.IsFeatured;
+                    existingCar.Rating = car.Rating;
+                    existingCar.UpdatedAt = DateTime.Now;
+                    
                     // Get the brand name from the selected brand
                     var brand = await _context.Brands.FindAsync(car.BrandId);
                     if (brand != null)
                     {
-                        car.Brand = brand.Name;
+                        existingCar.Brand = brand.Name;
                     }
                     
-                    car.UpdatedAt = DateTime.Now;
-                    _context.Update(car);
+                    Console.WriteLine($"Updated values - BrandId: {existingCar.BrandId}, Model: {existingCar.Model}");
+                    Console.WriteLine($"Updated rate: {existingCar.DailyRate}");
+                    
+                    _context.Update(existingCar);
                     await _context.SaveChangesAsync();
+                    Console.WriteLine("Car updated successfully");
                     TempData["SuccessMessage"] = "Car updated successfully!";
+                    Console.WriteLine("Redirecting to Index page...");
+                    return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!CarExists(car.Id))
+                    Console.WriteLine("ModelState is invalid:");
+                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        Console.WriteLine($"Error: {error.ErrorMessage}");
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in Edit POST: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                TempData["ErrorMessage"] = "An error occurred while updating the car.";
+            }
+
             ViewBag.BrandId = new SelectList(await _context.Brands.ToListAsync(), "Id", "Name", car.BrandId);
             return View(car);
         }

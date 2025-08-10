@@ -83,10 +83,17 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
         {
             try
             {
+                if (rental == null)
+                {
+                    Console.WriteLine("Rental object is null");
+                    TempData["ErrorMessage"] = "Invalid rental data.";
+                    return RedirectToAction("Index");
+                }
+
                 Console.WriteLine($"Edit POST called with id: {id}");
-                Console.WriteLine($"Rental object: {rental?.Id}, CarId: {rental?.CarId}, CustomerId: {rental?.CustomerId}");
+                Console.WriteLine($"Rental object: {rental.Id}, CarId: {rental.CarId}, CustomerId: {rental.CustomerId}");
                 Console.WriteLine($"Form data - CarId: {Request.Form["CarId"]}, CustomerId: {Request.Form["CustomerId"]}");
-                Console.WriteLine($"Model binding - CarId: {rental?.CarId}, CustomerId: {rental?.CustomerId}");
+                Console.WriteLine($"Model binding - CarId: {rental.CarId}, CustomerId: {rental.CustomerId}");
                 Console.WriteLine($"Form data - PickupDate: {Request.Form["PickupDate"]}, DropoffDate: {Request.Form["DropoffDate"]}");
                 Console.WriteLine($"Form data - TotalAmount: {Request.Form["TotalAmount"]}, Status: {Request.Form["Status"]}");
                 Console.WriteLine($"Form data - PickupLocation: {Request.Form["PickupLocation"]}, DropoffLocation: {Request.Form["DropoffLocation"]}");
@@ -209,7 +216,7 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            Console.WriteLine($"Admin Rentals Delete: found rental {rental.Id} for {rental.Customer?.FirstName} {rental.Customer?.LastName}");
+            Console.WriteLine($"Admin Rentals Delete: found rental {rental.Id} for {rental.Customer?.FirstName ?? "Unknown"} {rental.Customer?.LastName ?? "Customer"}");
             Console.WriteLine("Admin Rentals Delete: returning Delete confirmation view");
             return View(rental);
         }
@@ -233,8 +240,8 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
                 }
                 
                 // Store info for success message
-                var carInfo = $"{rental.Car?.Brand} {rental.Car?.Model}";
-                var customerInfo = $"{rental.Customer?.FirstName} {rental.Customer?.LastName}";
+                var carInfo = $"{rental.Car?.Brand ?? "Unknown"} {rental.Car?.Model ?? "Car"}";
+                var customerInfo = $"{rental.Customer?.FirstName ?? "Unknown"} {rental.Customer?.LastName ?? "Customer"}";
                 
                 _context.Rentals.Remove(rental);
                 await _context.SaveChangesAsync();
@@ -275,7 +282,7 @@ namespace CarRentingSystem2025.Areas.Admin.Controllers
 
         private bool RentalExists(int id)
         {
-            return _context.Rentals.Any(e => e.Id == id);
+            return _context.Rentals?.Any(e => e.Id == id) ?? false;
         }
     }
 }
